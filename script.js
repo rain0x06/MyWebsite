@@ -122,7 +122,7 @@ discordLink.addEventListener("click", (event) => {
     return;
   }
 
-  window.alert("I do not accept random friend requests, if you'd like to contact me please email me at rain@rain0x.me");
+  window.alert("I do not accept random friend requests. If you'd like to contact me, email rain@rain0x.me. Replies may come from my Gmail address.");
 });
 
 continueDiscord.addEventListener("click", () => {
