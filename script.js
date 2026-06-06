@@ -1,5 +1,8 @@
 const video = document.getElementById("backdropVideo");
 const enterGate = document.getElementById("enterGate");
+const discordLink = document.getElementById("discordLink");
+const discordWarning = document.getElementById("discordWarning");
+const continueDiscord = document.getElementById("continueDiscord");
 
 let hasEntered = false;
 
@@ -109,4 +112,20 @@ enterGate.addEventListener("keydown", (event) => {
 
   event.preventDefault();
   enterSite();
+});
+
+discordLink.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  if (typeof discordWarning.showModal === "function") {
+    discordWarning.showModal();
+    return;
+  }
+
+  window.alert("I do not accept random friend requests, if you'd like to contact me please email me at rain@rain0x.me");
+});
+
+continueDiscord.addEventListener("click", () => {
+  discordWarning.close();
+  window.open(discordLink.href, "_blank", "noopener,noreferrer");
 });
