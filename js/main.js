@@ -150,6 +150,8 @@
     audioFolder.add(sim.config, "BEAT_SENSITIVITY", 0.5, 4, 0.01).name("Beat Sensitivity");
     audioFolder.add(sim.config, "VOCAL_SENSITIVITY", 0, 4, 0.01).name("Vocal Sensitivity");
     audioFolder.add(sim.config, "VOCAL_DANCE_AMOUNT", 0, 3, 0.01).name("Dance Amount");
+    audioFolder.add(sim.config, "VOCAL_PITCH_REACTIVITY", 0, 3, 0.01).name("Pitch Bubbles");
+    audioFolder.add(sim.config, "BPM_BUBBLE_REACTIVITY", 0, 3, 0.01).name("BPM Bubbles");
     audioFolder.add(sim.config, "SWAY_SPEED", 0.02, 1.5, 0.01).name("Sway Speed");
     audioFolder.add(sim.config, "SWAY_RADIUS", 0, 0.35, 0.01).name("Sway Radius");
     audioFolder.add(sim.config, "BASS_SWAY_AMOUNT", 0, 2, 0.01).name("Bass Sway");

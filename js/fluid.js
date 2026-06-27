@@ -62,11 +62,13 @@ let config = {
   BASS_SWAY_AMOUNT: 0.7,
   SWIRL_RESPONSE: 0.16,
   BUBBLE_INTENSITY: 0.68,
+  VOCAL_PITCH_REACTIVITY: 1,
+  BPM_BUBBLE_REACTIVITY: 1,
   SMOKE_RING_POINTS: 7,
-  SMOKE_RING_RADIUS: 0.105,
+  SMOKE_RING_RADIUS: 0.02,
   BUBBLE_SPEED: 0.72,
   BUBBLE_TRAIL: 0.16,
-  MAX_AUDIO_BUBBLES: 5,
+  MAX_AUDIO_BUBBLES: 12,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
   KICK_LOW_HZ: 20,
@@ -95,6 +97,8 @@ let audioVisualState = {
   presence: 0,
   vocal: 0,
   pitch: 0.5,
+  pitchDelta: 0,
+  bpm: 0,
   rms: 0,
   time: 0,
   swayX: 0.5,
@@ -1316,6 +1320,7 @@ function createAudioRuntime(audioEl) {
     freqData: new Uint8Array(analyser.frequencyBinCount),
     timeData: new Uint8Array(analyser.fftSize),
     kickDetector: makeOnsetDetector(),
+    bassDetector: makeOnsetDetector(),
     presenceDetector: makeOnsetDetector(),
     bassFollower: makeEnvelopeFollower(0.14, 0.7),
     vocalFollower: makeEnvelopeFollower(0.08, 0.42),
@@ -1324,7 +1329,16 @@ function createAudioRuntime(audioEl) {
     objectUrl: null,
     lastSway: 0,
     lastPresence: 0,
+    lastPitchBubble: 0,
+    lastPitchDirection: 0,
+    lastPitchValue: 0.5,
+    lastKickTime: 0,
+    beatIntervalMs: 0,
+    nextBeatTime: 0,
+    lastGridBubble: 0,
     pitch: 0.5,
+    pitchFast: 0.5,
+    pitchSlow: 0.5,
   };
 
   updateAudioBands(runtime);
@@ -1416,9 +1430,9 @@ function chooseBubbleAngle() {
   return lastBubbleAngle;
 }
 
-function spawnAudioBubble(strength, pitch = 0.5, cursorWeight = 0.12) {
+function spawnAudioBubble(strength, pitch = 0.5, cursorWeight = 0.12, forcedAngle = null) {
   const center = pointerBiasPosition(cursorWeight);
-  const angle = chooseBubbleAngle();
+  const angle = forcedAngle == null ? chooseBubbleAngle() : forcedAngle;
   const songSpeed = config.BUBBLE_SPEED * (0.5 + Math.min(1, strength) * 0.7 + audioVisualState.rms * 0.55);
   const radius = config.SMOKE_RING_RADIUS * (0.65 + Math.min(1, strength) * 0.75);
 
@@ -1602,10 +1616,33 @@ function emitPresenceSplat(strength) {
   spawnAudioBubble(strength * 0.72, audioVisualState.pitch, 0.07);
 }
 
+function emitVocalPitchBubble(strength, pitch, direction) {
+  const pitchAngle = -Math.PI * 0.5 + pitch * Math.PI;
+  const launchAngle = wrap(pitchAngle + direction * 0.75 + (Math.random() - 0.5) * 0.35, 0, Math.PI * 2);
+  spawnAudioBubble(strength * config.VOCAL_PITCH_REACTIVITY, pitch, 0.04, launchAngle);
+}
+
 function emitTrackSway(vocal, bass, pitch, dt) {
   const energy = clamp01(vocal * 0.58 + bass * 0.42);
   audioVisualState.time += dt * config.SWAY_SPEED * (0.55 + bass * 0.45 + vocal * 0.3);
   spawnAudioBubble(energy * config.VOCAL_DANCE_AMOUNT * (0.65 + bass * config.BASS_SWAY_AMOUNT * 0.35), pitch, 0.05);
+}
+
+function updateBeatGrid(nowMs, songEnergy, pitch) {
+  if (config.BPM_BUBBLE_REACTIVITY <= 0 || audioRuntime.beatIntervalMs <= 0) return;
+
+  while (audioRuntime.nextBeatTime > 0 && nowMs > audioRuntime.nextBeatTime + audioRuntime.beatIntervalMs) {
+    audioRuntime.nextBeatTime += audioRuntime.beatIntervalMs;
+  }
+
+  if (audioRuntime.nextBeatTime > 0 && nowMs >= audioRuntime.nextBeatTime) {
+    const minGap = audioRuntime.beatIntervalMs * 0.55;
+    if (songEnergy > 0.16 && nowMs - audioRuntime.lastGridBubble > minGap) {
+      audioRuntime.lastGridBubble = nowMs;
+      spawnAudioBubble((0.24 + songEnergy * 0.9) * config.BPM_BUBBLE_REACTIVITY, pitch, 0.03);
+    }
+    audioRuntime.nextBeatTime += audioRuntime.beatIntervalMs;
+  }
 }
 
 function updateAudioInputs(dt) {
@@ -1623,45 +1660,75 @@ function updateAudioInputs(dt) {
 
   const nowMs = performance.now();
   const kick = audioRuntime.kickDetector(audioRuntime.freqData, audioRuntime.bands.kick, nowMs, config.BEAT_SENSITIVITY, 190);
+  const bassHit = audioRuntime.bassDetector(audioRuntime.freqData, audioRuntime.bands.bass, nowMs, config.BEAT_SENSITIVITY + 0.05, 135);
   const presence = audioRuntime.presenceDetector(audioRuntime.freqData, audioRuntime.bands.presence, nowMs, config.BEAT_SENSITIVITY + 0.25, 130);
   const bass = audioRuntime.bassFollower(audioRuntime.freqData, audioRuntime.bands.bass, dt);
   const vocal = audioRuntime.vocalFollower(audioRuntime.freqData, audioRuntime.bands.vocal, dt) * config.VOCAL_SENSITIVITY;
   const rms = audioRuntime.rmsFollower(audioRuntime.timeData, dt);
   const centroid = measureBandCentroid(audioRuntime.freqData, audioRuntime.bands.vocal);
   const pitchCoeff = 1 - Math.exp(-dt / 0.55);
+  const pitchFastCoeff = 1 - Math.exp(-dt / 0.07);
+  const pitchSlowCoeff = 1 - Math.exp(-dt / 0.42);
   audioRuntime.pitch += (centroid - audioRuntime.pitch) * pitchCoeff;
+  audioRuntime.pitchFast += (centroid - audioRuntime.pitchFast) * pitchFastCoeff;
+  audioRuntime.pitchSlow += (centroid - audioRuntime.pitchSlow) * pitchSlowCoeff;
+  const pitchDelta = audioRuntime.pitchFast - audioRuntime.pitchSlow;
 
   audioVisualState.kick = kick;
   audioVisualState.bass = bass;
   audioVisualState.presence = presence;
   audioVisualState.vocal = vocal;
   audioVisualState.pitch = audioRuntime.pitch;
+  audioVisualState.pitchDelta = pitchDelta;
   audioVisualState.rms = rms;
   _runRandom = false;
 
   const cappedVocal = Math.min(1, vocal);
   const cappedBass = Math.min(1, bass);
   const cappedPresence = Math.min(1, presence);
-  const songEnergy = clamp01(cappedBass * 0.48 + cappedVocal * 0.32 + rms * 1.2 + Math.min(1, kick) * 0.2);
+  const songEnergy = clamp01(cappedBass * 0.48 + cappedVocal * 0.32 + rms * 1.2 + Math.min(1, kick + bassHit) * 0.2);
   config.CURL = baseCurl + config.SWIRL_RESPONSE * (cappedVocal * 8 + cappedBass * 5 + cappedPresence * 3);
   config.COLOR_UPDATE_SPEED = baseColorUpdateSpeed * (0.55 + cappedVocal * 0.25 + cappedBass * 0.2);
   config.BLOOM_INTENSITY = baseBloomIntensity * (1 + 0.35 * rms);
   config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.08 * rms);
 
   if (kick > 0) {
+    if (audioRuntime.lastKickTime > 0) {
+      const gap = nowMs - audioRuntime.lastKickTime;
+      if (gap >= 260 && gap <= 900) {
+        audioRuntime.beatIntervalMs = audioRuntime.beatIntervalMs > 0 ? audioRuntime.beatIntervalMs * 0.72 + gap * 0.28 : gap;
+        audioRuntime.nextBeatTime = nowMs + audioRuntime.beatIntervalMs;
+        audioVisualState.bpm = 60000 / audioRuntime.beatIntervalMs;
+      }
+    }
+    audioRuntime.lastKickTime = nowMs;
     emitBeatSplats(kick);
+  } else if (bassHit > 0) {
+    emitBeatSplats(Math.min(1.6, bassHit * 0.8));
   } else if (presence > 0 && nowMs - audioRuntime.lastPresence > 1100) {
     audioRuntime.lastPresence = nowMs;
     emitPresenceSplat(Math.min(1, presence));
   }
 
+  const pitchDirection = pitchDelta > 0 ? 1 : pitchDelta < 0 ? -1 : 0;
+  const pitchJump = Math.abs(audioRuntime.pitchFast - audioRuntime.lastPitchValue);
+  const changedDirection = pitchDirection !== 0 && pitchDirection !== audioRuntime.lastPitchDirection;
+  const pitchChanged = Math.abs(pitchDelta) > 0.026 && (changedDirection || pitchJump > 0.042);
+  if (cappedVocal > 0.11 && pitchChanged && nowMs - audioRuntime.lastPitchBubble > 115) {
+    audioRuntime.lastPitchBubble = nowMs;
+    audioRuntime.lastPitchDirection = pitchDirection;
+    audioRuntime.lastPitchValue = audioRuntime.pitchFast;
+    emitVocalPitchBubble(0.28 + cappedVocal * 0.85 + Math.min(0.55, Math.abs(pitchDelta) * 7), audioRuntime.pitchFast, pitchDirection);
+  }
+
   audioRuntime.lastSway += dt;
-  if ((vocal > 0.22 || bass > 0.28) && audioRuntime.lastSway > 1.35) {
+  if ((vocal > 0.22 || bass > 0.28) && audioRuntime.lastSway > 1.8) {
     const swayDt = audioRuntime.lastSway;
     audioRuntime.lastSway = 0;
     emitTrackSway(cappedVocal, cappedBass, audioRuntime.pitch, swayDt);
   }
 
+  updateBeatGrid(nowMs, songEnergy, audioRuntime.pitch);
   updateAudioBubbles(dt, songEnergy);
 }
 
