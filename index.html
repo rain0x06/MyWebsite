@@ -14,13 +14,16 @@
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="preload" href="assets/daylight.mp4" as="video" type="video/mp4">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body class="is-locked">
     <video class="backdrop-video" id="backdropVideo" muted loop playsinline preload="auto" poster="assets/daylight-poster.jpg">
       <source src="assets/daylight.mp4" type="video/mp4">
     </video>
+    <audio id="siteAudio" preload="auto" loop>
+      <source src="HUNCHO%20JACK%2C%20Travis%20Scott%2C%20Quavo%20-%20Where%20U%20From%20(Audio).mp3" type="audio/mpeg">
+    </audio>
+    <canvas class="fluid-canvas" id="fluidCanvas" aria-hidden="true"></canvas>
 
     <button class="enter-gate" id="enterGate" type="button" aria-label="Click to enter">
       <span>click to enter</span>
@@ -56,6 +59,7 @@
       </form>
     </dialog>
 
+    <script src="fluid-visualizer.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

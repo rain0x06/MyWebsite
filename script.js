@@ -1,10 +1,13 @@
 const video = document.getElementById("backdropVideo");
+const audio = document.getElementById("siteAudio");
+const fluidCanvas = document.getElementById("fluidCanvas");
 const enterGate = document.getElementById("enterGate");
 const discordLink = document.getElementById("discordLink");
 const discordWarning = document.getElementById("discordWarning");
 const continueDiscord = document.getElementById("continueDiscord");
 
 let hasEntered = false;
+let fluidVisualizer = null;
 
 window.startTabTitleEffect = function startTabTitleEffect() {
   if (window.startTabTitleEffect.started) {
@@ -80,14 +83,49 @@ function setEntered() {
 }
 
 async function startVideo() {
-  video.volume = 0.78;
-  video.muted = false;
+  video.volume = 0;
+  video.muted = true;
 
   try {
     await video.play();
   } catch {
-    video.muted = true;
-    await video.play();
+    video.pause();
+  }
+}
+
+async function startAudio() {
+  if (!audio) {
+    return;
+  }
+
+  audio.volume = 0.82;
+
+  try {
+    await audio.play();
+  } catch (error) {
+    document.documentElement.dataset.audioPlayback = "blocked";
+    document.documentElement.dataset.audioPlaybackError = error && error.message ? error.message : "play-rejected";
+    audio.controls = true;
+  }
+}
+
+async function startFluidVisualizer() {
+  try {
+    if (!fluidVisualizer && window.AudioFluidVisualizer && fluidCanvas && audio) {
+      fluidVisualizer = new window.AudioFluidVisualizer({
+        canvas: fluidCanvas,
+        audio,
+      });
+      window.rainFluid = fluidVisualizer;
+    }
+
+    if (fluidVisualizer) {
+      await fluidVisualizer.start();
+    }
+  } catch (error) {
+    document.documentElement.dataset.fluidStatus = "error";
+    document.documentElement.dataset.fluidError = error && error.message ? error.message : "unknown";
+    throw error;
   }
 }
 
@@ -97,7 +135,11 @@ async function enterSite() {
   }
 
   setEntered();
-  await startVideo();
+  await Promise.allSettled([
+    startVideo(),
+    startFluidVisualizer(),
+    startAudio(),
+  ]);
 }
 
 enterGate.addEventListener("pointerdown", (event) => {

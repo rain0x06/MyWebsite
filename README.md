@@ -6,11 +6,17 @@ Static personal site for `rain0x.me`.
 
 - `index.html` - page markup, icons, and metadata.
 - `styles.css` - full-screen video layout, blurred enter gate, and top-right icon styling.
-- `script.js` - click-to-enter video/audio start behavior.
+- `script.js` - click-to-enter video/audio/fluid start behavior.
+- `fluid-visualizer.js` - WebGL fluid simulation, audio analysis, beat/vocal splats, and pointer motion response.
 - `assets/daylight.mp4` - background video/audio.
 - `assets/daylight-poster.jpg` - paused-video poster frame shown before entry.
 - `assets/rain-pfp.png` - favicon, preview image, and avatar.
+- `HUNCHO JACK, Travis Scott, Quavo - Where U From (Audio).mp3` - post-entry audio source for the visualizer.
 - `CNAME` - GitHub Pages custom-domain file.
+
+## Visualizer Attribution
+
+The fluid renderer follows the WebGL fluid pipeline used by Pavel Dobryakov's MIT-licensed WebGL Fluid Simulation and the Lively Wallpaper fork: splats, curl/vorticity confinement, pressure projection, gradient subtraction, advection, and final display. This site adds local MP3 analysis for bass onsets, vocal-band movement, and mouse speed/acceleration splats.
 
 ## Free Hosting
 
