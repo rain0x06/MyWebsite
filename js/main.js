@@ -13,6 +13,10 @@
   const trackPickerPanel = document.getElementById("trackPickerPanel");
   const trackListEl = document.getElementById("trackList");
   const spotifyEmbedEl = document.getElementById("spotifyEmbed");
+  const spotifyPlayerCover = document.getElementById("spotifyPlayerCover");
+  const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
+  const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
+  const spotifyPlayerPlay = document.getElementById("spotifyPlayerPlay");
 
   window.startTabTitleEffect = function startTabTitleEffect() {
     if (window.startTabTitleEffect.started) return;
@@ -122,6 +126,10 @@
     trackPickerPanel,
     trackListEl,
     spotifyEmbedEl,
+    spotifyPlayerCover,
+    spotifyPlayerTitle,
+    spotifyPlayerArtist,
+    spotifyPlayerPlay,
   });
 
   function setupGui() {

@@ -78,6 +78,10 @@
   let trackPickerPanel = null;
   let trackListEl = null;
   let spotifyEmbedEl = null;
+  let spotifyPlayerCover = null;
+  let spotifyPlayerTitle = null;
+  let spotifyPlayerArtist = null;
+  let spotifyPlayerPlay = null;
   let currentObjectUrl = null;
   let selectedPlaylistTrack = null;
   let randomizedTracks = [];
@@ -112,7 +116,7 @@
     if (track.explicit) parts.push('<span class="track-badge">E</span>');
     if (track.meta) parts.push(`<span class="track-video">${track.meta}</span>`);
     parts.push(track.artists);
-    return parts.join(track.meta ? ' <span class="track-dot">•</span> ' : " ");
+    return parts.join(track.meta ? ' <span class="track-dot">&bull;</span> ' : " ");
   }
 
   function renderPlaylist() {
@@ -137,6 +141,9 @@
 
   function renderSpotifyEmbed(track) {
     if (!spotifyEmbedEl || !track) return;
+    if (spotifyPlayerCover) spotifyPlayerCover.src = track.cover;
+    if (spotifyPlayerTitle) spotifyPlayerTitle.textContent = track.title;
+    if (spotifyPlayerArtist) spotifyPlayerArtist.textContent = track.artists;
     spotifyEmbedEl.innerHTML = `
       <iframe
         data-testid="embed-iframe"
@@ -149,6 +156,11 @@
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"></iframe>
     `;
+  }
+
+  function setSpotifyEmbedVisible(isVisible) {
+    if (!spotifyEmbedEl) return;
+    spotifyEmbedEl.classList.toggle("is-visible", Boolean(isVisible));
   }
 
   async function play() {
@@ -236,6 +248,10 @@
     trackPickerPanel = options.trackPickerPanel;
     trackListEl = options.trackListEl;
     spotifyEmbedEl = options.spotifyEmbedEl;
+    spotifyPlayerCover = options.spotifyPlayerCover;
+    spotifyPlayerTitle = options.spotifyPlayerTitle;
+    spotifyPlayerArtist = options.spotifyPlayerArtist;
+    spotifyPlayerPlay = options.spotifyPlayerPlay;
     randomizedTracks = shuffleTracks(playlistTracks);
     selectedPlaylistTrack = randomizedTracks[0] || null;
 
@@ -252,6 +268,12 @@
 
     if (playButton) playButton.addEventListener("click", toggle);
     if (changeTrackButton) changeTrackButton.addEventListener("click", () => setTrackPickerOpen(true));
+    if (spotifyPlayerPlay) {
+      spotifyPlayerPlay.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setSpotifyEmbedVisible(!(spotifyEmbedEl && spotifyEmbedEl.classList.contains("is-visible")));
+      });
+    }
     if (trackPickerPanel) {
       trackPickerPanel.addEventListener("click", (event) => {
         const closeTarget = event.target.closest("[data-close-track-picker]");
