@@ -186,6 +186,10 @@
     document.body.classList.toggle("is-track-picker-open", isOpen);
   }
 
+  function toggleTrackPicker() {
+    setTrackPickerOpen(!trackPickerPanel || trackPickerPanel.hidden);
+  }
+
   function setEnteredIdle() {
     document.body.classList.add("is-entered");
     document.body.classList.remove("is-locked");
@@ -682,6 +686,10 @@
     play,
     pause,
     toggle,
+    openTrackPicker: () => setTrackPickerOpen(true),
+    closeTrackPicker: () => setTrackPickerOpen(false),
+    toggleTrackPicker,
+    isTrackPickerOpen: () => Boolean(trackPickerPanel && !trackPickerPanel.hidden),
     setTrackFromFile,
     selectSpotifyTrack,
   };

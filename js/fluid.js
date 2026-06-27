@@ -28,13 +28,13 @@ const canvas = document.getElementsByTagName("canvas")[0];
 resizeCanvas();
 
 let config = {
-  SIM_RESOLUTION: 64,
-  DYE_RESOLUTION: 512,
+  SIM_RESOLUTION: 48,
+  DYE_RESOLUTION: 384,
   CAPTURE_RESOLUTION: 512,
   DENSITY_DISSIPATION: 1.35,
   VELOCITY_DISSIPATION: 0.55,
   PRESSURE: 0.8,
-  PRESSURE_ITERATIONS: 12,
+  PRESSURE_ITERATIONS: 8,
   CURL: 6,
   SPLAT_RADIUS: 0.18,
   SPLAT_FORCE: 4200,
@@ -54,6 +54,8 @@ let config = {
   SUNRAYS_RESOLUTION: 196,
   SUNRAYS_WEIGHT: 0.35,
   MOUSE_FORCE_MULTIPLIER: 3.5,
+  MOUSE_SPLAT_INTERVAL_MS: 48,
+  MOUSE_SPLAT_MIN_DELTA: 0.0022,
   BEAT_SENSITIVITY: 1.65,
   VOCAL_DANCE_AMOUNT: 0.55,
   VOCAL_SENSITIVITY: 0.65,
@@ -64,11 +66,11 @@ let config = {
   BUBBLE_INTENSITY: 0.68,
   VOCAL_PITCH_REACTIVITY: 1,
   BPM_BUBBLE_REACTIVITY: 1,
-  SMOKE_RING_POINTS: 7,
+  SMOKE_RING_POINTS: 6,
   SMOKE_RING_RADIUS: 0.02,
   BUBBLE_SPEED: 0.72,
   BUBBLE_TRAIL: 0.07,
-  MAX_AUDIO_BUBBLES: 12,
+  MAX_AUDIO_BUBBLES: 10,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
   KICK_LOW_HZ: 20,
@@ -161,6 +163,7 @@ function pointerPrototype() {
   this.deltaY = 0;
   this.down = false;
   this.moved = false;
+  this.lastSplatTime = 0;
   this.color = [30, 0, 300];
 }
 
@@ -171,10 +174,10 @@ pointers.push(new pointerPrototype());
 const { gl, ext } = getWebGLContext(canvas);
 
 if (isMobile()) {
-  config.DYE_RESOLUTION = 512;
+  config.DYE_RESOLUTION = 256;
 }
 if (!ext.supportLinearFiltering) {
-  config.DYE_RESOLUTION = 512;
+  config.DYE_RESOLUTION = 256;
   config.SHADING = false;
   config.BLOOM = false;
   config.SUNRAYS = false;
@@ -1967,8 +1970,13 @@ function blur(target, temp, iterations) {
 }
 
 function splatPointer(pointer) {
-  let dx = pointer.deltaX * config.SPLAT_FORCE * config.MOUSE_FORCE_MULTIPLIER;
-  let dy = pointer.deltaY * config.SPLAT_FORCE * config.MOUSE_FORCE_MULTIPLIER;
+  const now = performance.now();
+  const moveAmount = Math.sqrt(pointer.deltaX * pointer.deltaX + pointer.deltaY * pointer.deltaY);
+  if (moveAmount < config.MOUSE_SPLAT_MIN_DELTA || now - pointer.lastSplatTime < config.MOUSE_SPLAT_INTERVAL_MS) return;
+  pointer.lastSplatTime = now;
+  const speedScale = Math.min(1, moveAmount / 0.018);
+  let dx = pointer.deltaX * config.SPLAT_FORCE * config.MOUSE_FORCE_MULTIPLIER * (0.42 + speedScale * 0.58);
+  let dy = pointer.deltaY * config.SPLAT_FORCE * config.MOUSE_FORCE_MULTIPLIER * (0.42 + speedScale * 0.58);
   splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
 }
 
@@ -2095,6 +2103,7 @@ function updatePointerDownData(pointer, id, posX, posY) {
   pointer.prevTexcoordY = pointer.texcoordY;
   pointer.deltaX = 0;
   pointer.deltaY = 0;
+  pointer.lastSplatTime = 0;
   pointer.color = generateColor();
 }
 

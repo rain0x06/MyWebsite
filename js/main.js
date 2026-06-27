@@ -16,6 +16,7 @@
   const spotifyPlayerCover = document.getElementById("spotifyPlayerCover");
   const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
   const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
+  const spotifyOverlayToggle = document.getElementById("spotifyOverlayToggle");
   const spotifySettings = document.getElementById("spotifySettings");
   const spotifyShuffle = document.getElementById("spotifyShuffle");
   const spotifyPrevious = document.getElementById("spotifyPrevious");
@@ -153,6 +154,88 @@
     spotifySeek,
   });
 
+  function syncSpotifyToggleState() {
+    if (!spotifyOverlayToggle || !window.FluidAudio || typeof window.FluidAudio.isTrackPickerOpen !== "function") return;
+    const isOpen = window.FluidAudio.isTrackPickerOpen();
+    spotifyOverlayToggle.classList.toggle("is-open", isOpen);
+    spotifyOverlayToggle.setAttribute("aria-pressed", isOpen ? "true" : "false");
+  }
+
+  if (spotifyOverlayToggle) {
+    spotifyOverlayToggle.addEventListener("click", () => {
+      window.FluidAudio.toggleTrackPicker();
+      syncSpotifyToggleState();
+    });
+  }
+
+  function setupTrackPanelDrag() {
+    if (!trackPickerPanel) return;
+    const panel = trackPickerPanel.querySelector(".track-picker__panel");
+    const header = trackPickerPanel.querySelector(".track-picker__header");
+    if (!panel || !header) return;
+
+    function clampPanel(left, top) {
+      const margin = 10;
+      const rect = panel.getBoundingClientRect();
+      return {
+        left: Math.min(window.innerWidth - rect.width - margin, Math.max(margin, left)),
+        top: Math.min(window.innerHeight - rect.height - margin, Math.max(margin, top)),
+      };
+    }
+
+    header.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest("button, input, a, .spotify-player__seek")) return;
+      const startRect = panel.getBoundingClientRect();
+      const startX = event.clientX;
+      const startY = event.clientY;
+      panel.classList.add("is-dragging");
+      try {
+        header.setPointerCapture(event.pointerId);
+      } catch (error) {
+        // Synthetic pointer events used in smoke tests do not always create an active pointer.
+      }
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+      panel.style.left = `${startRect.left}px`;
+      panel.style.top = `${startRect.top}px`;
+
+      function movePanel(moveEvent) {
+        const next = clampPanel(startRect.left + moveEvent.clientX - startX, startRect.top + moveEvent.clientY - startY);
+        panel.style.left = `${next.left}px`;
+        panel.style.top = `${next.top}px`;
+      }
+
+      function releasePanel() {
+        panel.classList.remove("is-dragging");
+        header.removeEventListener("pointermove", movePanel);
+        header.removeEventListener("pointerup", releasePanel);
+        header.removeEventListener("pointercancel", releasePanel);
+      }
+
+      header.addEventListener("pointermove", movePanel);
+      header.addEventListener("pointerup", releasePanel);
+      header.addEventListener("pointercancel", releasePanel);
+    });
+
+    window.addEventListener("resize", () => {
+      if (trackPickerPanel.hidden) return;
+      const rect = panel.getBoundingClientRect();
+      const next = clampPanel(rect.left, rect.top);
+      panel.style.left = `${next.left}px`;
+      panel.style.top = `${next.top}px`;
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+    });
+  }
+
+  setupTrackPanelDrag();
+
+  if (trackPickerPanel) {
+    const observer = new MutationObserver(syncSpotifyToggleState);
+    observer.observe(trackPickerPanel, { attributes: true, attributeFilter: ["hidden"] });
+    syncSpotifyToggleState();
+  }
+
   function setupGui() {
     if (!window.dat || !window.FluidSimulation) return;
 
@@ -179,8 +262,8 @@
     simFolder.add(sim.config, "BLOOM_INTENSITY", 0, 2, 0.01).name("Bloom Intensity").onChange(refreshBase);
     simFolder.add(sim.config, "SUNRAYS").name("Sunrays").onChange(refreshKeywords);
     simFolder.add(sim.config, "SUNRAYS_WEIGHT", 0, 2, 0.01).name("Sunrays Weight");
-    simFolder.add(sim.config, "DYE_RESOLUTION", [128, 256, 512, 1024]).name("Dye Resolution").onChange(refreshFramebuffers);
-    simFolder.add(sim.config, "SIM_RESOLUTION", [32, 64, 128, 256]).name("Sim Resolution").onChange(refreshFramebuffers);
+    simFolder.add(sim.config, "DYE_RESOLUTION", [128, 256, 384, 512, 1024]).name("Dye Resolution").onChange(refreshFramebuffers);
+    simFolder.add(sim.config, "SIM_RESOLUTION", [32, 48, 64, 128, 256]).name("Sim Resolution").onChange(refreshFramebuffers);
 
     const audioFolder = gui.addFolder("Audio");
     audioFolder.add({ PlayPause: () => window.FluidAudio.toggle() }, "PlayPause").name("Play/Pause");
@@ -211,6 +294,7 @@
 
     const mouseFolder = gui.addFolder("Mouse");
     mouseFolder.add(sim.config, "MOUSE_FORCE_MULTIPLIER", 0, 5, 0.01).name("Mouse Reactivity");
+    mouseFolder.add(sim.config, "MOUSE_SPLAT_INTERVAL_MS", 16, 120, 1).name("Mouse Throttle");
     mouseFolder.add(sim.config, "AUDIO_BIAS_TO_CURSOR").name("Beat Follows Cursor");
     mouseFolder.add(sim.config, "AMBIENT_IDLE_SPLATS").name("Ambient Idle");
 
