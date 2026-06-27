@@ -28,35 +28,35 @@ const canvas = document.getElementsByTagName("canvas")[0];
 resizeCanvas();
 
 let config = {
-  SIM_RESOLUTION: 128,
-  DYE_RESOLUTION: 1024,
+  SIM_RESOLUTION: 64,
+  DYE_RESOLUTION: 512,
   CAPTURE_RESOLUTION: 512,
   DENSITY_DISSIPATION: 1,
   VELOCITY_DISSIPATION: 0.2,
   PRESSURE: 0.8,
-  PRESSURE_ITERATIONS: 20,
-  CURL: 30,
-  SPLAT_RADIUS: 0.25,
-  SPLAT_FORCE: 6000,
+  PRESSURE_ITERATIONS: 12,
+  CURL: 24,
+  SPLAT_RADIUS: 0.18,
+  SPLAT_FORCE: 4200,
   SHADING: true,
   COLORFUL: true,
   COLOR_UPDATE_SPEED: 10,
   PAUSED: false,
   BACK_COLOR: { r: 0, g: 0, b: 0 },
   TRANSPARENT: false,
-  BLOOM: true,
-  BLOOM_ITERATIONS: 8,
-  BLOOM_RESOLUTION: 256,
-  BLOOM_INTENSITY: 0.8,
+  BLOOM: false,
+  BLOOM_ITERATIONS: 4,
+  BLOOM_RESOLUTION: 128,
+  BLOOM_INTENSITY: 0.25,
   BLOOM_THRESHOLD: 0.6,
   BLOOM_SOFT_KNEE: 0.7,
-  SUNRAYS: true,
+  SUNRAYS: false,
   SUNRAYS_RESOLUTION: 196,
-  SUNRAYS_WEIGHT: 1.0,
-  MOUSE_FORCE_MULTIPLIER: 1.0,
-  BEAT_SENSITIVITY: 1.5,
-  VOCAL_DANCE_AMOUNT: 1.0,
-  VOCAL_SENSITIVITY: 1.0,
+  SUNRAYS_WEIGHT: 0.35,
+  MOUSE_FORCE_MULTIPLIER: 0.75,
+  BEAT_SENSITIVITY: 1.65,
+  VOCAL_DANCE_AMOUNT: 0.55,
+  VOCAL_SENSITIVITY: 0.65,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
   KICK_LOW_HZ: 20,
@@ -85,7 +85,7 @@ let audioVisualState = {
 };
 
 function randomSplat() {
-  if (_runRandom && config.AMBIENT_IDLE_SPLATS) splatStack.push(parseInt(Math.random() * 20) + 5);
+  if (_runRandom && config.AMBIENT_IDLE_SPLATS) splatStack.push(parseInt(Math.random() * 5) + 3);
 }
 
 let colorRange = ["#FF0000","#FF0001"];
@@ -995,8 +995,17 @@ function initFramebuffers() {
   curl = createFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
   pressure = createDoubleFBO(simRes.width, simRes.height, r.internalFormat, r.format, texType, gl.NEAREST);
 
-  initBloomFramebuffers();
-  initSunraysFramebuffers();
+  if (config.BLOOM) initBloomFramebuffers();
+  else {
+    bloom = null;
+    bloomFramebuffers.length = 0;
+  }
+
+  if (config.SUNRAYS) initSunraysFramebuffers();
+  else {
+    sunrays = null;
+    sunraysTemp = null;
+  }
 }
 
 function initBloomFramebuffers() {
@@ -1155,7 +1164,7 @@ function updateKeywords() {
 
 updateKeywords();
 initFramebuffers();
-multipleSplats(parseInt(Math.random() * 20) + 5);
+multipleSplats(4);
 
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;
@@ -1344,10 +1353,10 @@ function emitBeatSplats(strength) {
     const angle = Math.random() * Math.PI * 2;
     const radiusBefore = config.SPLAT_RADIUS;
     const force = config.SPLAT_FORCE * (0.5 + 0.5 * strength);
-    config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.6 * strength);
-    color.r *= 10.0 * Math.max(0.5, strength);
-    color.g *= 10.0 * Math.max(0.5, strength);
-    color.b *= 10.0 * Math.max(0.5, strength);
+    config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.45 * strength);
+    color.r *= 3.2 * Math.max(0.45, strength);
+    color.g *= 3.2 * Math.max(0.45, strength);
+    color.b *= 3.2 * Math.max(0.45, strength);
     splat(pos.x, pos.y, Math.cos(angle) * force, Math.sin(angle) * force, color);
     config.SPLAT_RADIUS = radiusBefore;
   }
@@ -1359,10 +1368,10 @@ function emitPresenceSplat(strength) {
   const angle = Math.random() * Math.PI * 2;
   const radiusBefore = config.SPLAT_RADIUS;
   config.SPLAT_RADIUS = Math.max(0.08, baseSplatRadius * 0.45);
-  color.r *= 7.0 * strength;
-  color.g *= 7.0 * strength;
-  color.b *= 7.0 * strength;
-  splat(pos.x, pos.y, Math.cos(angle) * config.SPLAT_FORCE * 0.35, Math.sin(angle) * config.SPLAT_FORCE * 0.35, color);
+  color.r *= 1.8 * strength;
+  color.g *= 1.8 * strength;
+  color.b *= 1.8 * strength;
+  splat(pos.x, pos.y, Math.cos(angle) * config.SPLAT_FORCE * 0.25, Math.sin(angle) * config.SPLAT_FORCE * 0.25, color);
   config.SPLAT_RADIUS = radiusBefore;
 }
 
@@ -1370,10 +1379,10 @@ function emitVocalSway(vocal, dt) {
   audioVisualState.time += dt * (0.85 + vocal * 1.8);
   const phase = audioVisualState.time;
   const color = generateColor();
-  color.r *= 3.5 + vocal * 8;
-  color.g *= 3.5 + vocal * 8;
-  color.b *= 3.5 + vocal * 8;
-  const force = config.SPLAT_FORCE * 0.08 * vocal * config.VOCAL_DANCE_AMOUNT;
+  color.r *= 1.2 + vocal * 2.4;
+  color.g *= 1.2 + vocal * 2.4;
+  color.b *= 1.2 + vocal * 2.4;
+  const force = config.SPLAT_FORCE * 0.055 * vocal * config.VOCAL_DANCE_AMOUNT;
   const radiusBefore = config.SPLAT_RADIUS;
   config.SPLAT_RADIUS = baseSplatRadius * (0.55 + vocal * 0.45);
   splat(0.5 + Math.cos(phase * 0.7) * 0.16, 0.5 + Math.sin(phase * 0.9) * 0.13, Math.cos(phase) * force, Math.sin(phase) * force, color);
@@ -1404,9 +1413,9 @@ function updateAudioInputs(dt) {
   _runRandom = false;
 
   config.CURL = baseCurl + config.VOCAL_DANCE_AMOUNT * Math.min(1, vocal) * 24;
-  config.COLOR_UPDATE_SPEED = 10 + Math.min(1, vocal) * 18;
-  config.BLOOM_INTENSITY = baseBloomIntensity * (1 + 0.5 * rms);
-  config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.12 * rms);
+  config.COLOR_UPDATE_SPEED = 8 + Math.min(1, vocal) * 10;
+  config.BLOOM_INTENSITY = baseBloomIntensity * (1 + 0.35 * rms);
+  config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.08 * rms);
 
   if (kick > 0) {
     emitBeatSplats(kick);
@@ -1414,7 +1423,9 @@ function updateAudioInputs(dt) {
     emitPresenceSplat(Math.min(1, presence));
   }
 
-  if (vocal > 0.035) {
+  audioRuntime.lastSway += dt;
+  if (vocal > 0.05 && audioRuntime.lastSway > 0.055) {
+    audioRuntime.lastSway = 0;
     emitVocalSway(Math.min(1, vocal), dt);
   }
 }
@@ -1646,9 +1657,9 @@ function splatPointer(pointer) {
 function multipleSplats(amount) {
   for (let i = 0; i < amount; i++) {
     const color = generateColor();
-    color.r *= 10.0;
-    color.g *= 10.0;
-    color.b *= 10.0;
+    color.r *= 2.4;
+    color.g *= 2.4;
+    color.b *= 2.4;
     const x = Math.random();
     const y = Math.random();
     const dx = 1000 * (Math.random() - 0.5);
@@ -1917,7 +1928,7 @@ function getTextureScale(texture, width, height) {
 }
 
 function scaleByPixelRatio(input) {
-  let pixelRatio = window.devicePixelRatio || 1;
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, 1);
   return Math.floor(input * pixelRatio);
 }
 

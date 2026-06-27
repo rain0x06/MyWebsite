@@ -124,7 +124,10 @@
     gui.domElement.id = "fluidGui";
 
     const refreshFramebuffers = () => sim.initFramebuffers();
-    const refreshKeywords = () => sim.updateKeywords();
+    const refreshKeywords = () => {
+      sim.updateKeywords();
+      sim.initFramebuffers();
+    };
     const refreshBase = () => sim.refreshAudioBaseValues();
     const refreshBands = () => sim.updateAudioBands();
 
@@ -159,8 +162,10 @@
     mouseFolder.add(sim.config, "AUDIO_BIAS_TO_CURSOR").name("Beat Follows Cursor");
     mouseFolder.add(sim.config, "AMBIENT_IDLE_SPLATS").name("Ambient Idle");
 
-    simFolder.open();
-    audioFolder.open();
+    gui.close();
+    window.setTimeout(() => {
+      if (!gui.closed) gui.close();
+    }, 0);
   }
 
   setupGui();

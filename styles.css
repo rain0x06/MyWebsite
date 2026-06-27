@@ -25,6 +25,19 @@ body {
   color: var(--text);
 }
 
+.dg.ac {
+  z-index: 12 !important;
+}
+
+.dg.main {
+  opacity: 0.82;
+}
+
+.dg.main:hover,
+.dg.main:focus-within {
+  opacity: 0.96;
+}
+
 a {
   color: inherit;
 }
