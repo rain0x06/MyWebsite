@@ -14,6 +14,7 @@
   const trackListEl = document.getElementById("trackList");
   const spotifyEmbedEl = document.getElementById("spotifyEmbed");
   const spotifyPlayerCover = document.getElementById("spotifyPlayerCover");
+  const spotifyPlayerMeta = document.querySelector(".spotify-player__meta");
   const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
   const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
   const spotifyOverlayToggle = document.getElementById("spotifyOverlayToggle");
@@ -234,6 +235,21 @@
     const observer = new MutationObserver(syncSpotifyToggleState);
     observer.observe(trackPickerPanel, { attributes: true, attributeFilter: ["hidden"] });
     syncSpotifyToggleState();
+  }
+
+  if (window.SpotifyLive) {
+    window.SpotifyLive.init({
+      coverEl: spotifyPlayerCover,
+      metaEl: spotifyPlayerMeta,
+      titleEl: spotifyPlayerTitle,
+      artistEl: spotifyPlayerArtist,
+      playButton: spotifyPlayerPlay,
+      currentTimeEl: spotifyCurrentTime,
+      durationEl: spotifyDuration,
+      seekEl: spotifySeek,
+      embedEl: spotifyEmbedEl,
+      trackListEl,
+    });
   }
 
   function setupGui() {

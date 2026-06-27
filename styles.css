@@ -238,7 +238,7 @@ body.is-entered .enter-gate {
 
 .track-picker__header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 10px;
   padding: 10px;
@@ -607,30 +607,6 @@ body.is-entered .enter-gate {
   background: #fff;
 }
 
-.track-picker__close {
-  display: inline-grid;
-  min-width: 54px;
-  height: 28px;
-  place-items: center;
-  border: 0;
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.78);
-  background: rgba(255, 255, 255, 0.08);
-  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.track-picker__close:hover,
-.track-picker__close:focus-visible {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  outline: none;
-}
-
 .track-list {
   flex: 1 1 auto;
   min-height: 0;
@@ -653,7 +629,7 @@ body.is-entered .enter-gate {
   display: block;
   width: auto;
   height: auto;
-  padding: 0 14px 10px;
+  padding: 8px 10px 0;
   overflow: visible;
   clip: auto;
 }
@@ -676,6 +652,70 @@ body.is-entered .enter-gate {
   font-family: "Segoe UI", Arial, Helvetica, sans-serif;
   font-size: 0.78rem;
   text-decoration: none;
+}
+
+.spotify-live-card {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(30, 215, 96, 0.22);
+  border-radius: 8px;
+  background: rgba(30, 215, 96, 0.08);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+.spotify-live-card__title {
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.spotify-live-card__text {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.spotify-live-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.spotify-live-button {
+  display: inline-grid;
+  min-height: 28px;
+  place-items: center;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.spotify-live-button.primary {
+  border-color: rgba(30, 215, 96, 0.5);
+  background: rgba(30, 215, 96, 0.18);
+}
+
+.spotify-player__meta.is-link {
+  cursor: pointer;
+}
+
+.spotify-player__meta.is-link:hover .spotify-player__title {
+  text-decoration: underline;
+}
+
+.track-row.spotify-live-row {
+  grid-template-columns: 30px 34px minmax(170px, 1fr) minmax(88px, 124px);
+}
+
+.track-row.spotify-live-row .track-number {
+  color: #1ed760;
 }
 
 .spotify-link span {

@@ -2035,7 +2035,18 @@ function pointerPosition(event) {
   };
 }
 
+function isUiPointerEvent(event) {
+  const target = event.target;
+  return Boolean(
+    target && target.closest && target.closest(".site-header, .track-picker, .contact-warning, .enter-gate, dialog, button, a, input, label")
+  );
+}
+
 window.addEventListener("mousemove", (e) => {
+  if (isUiPointerEvent(e)) {
+    updatePointerUpData(pointers[0]);
+    return;
+  }
   const pos = pointerPosition(e);
   if (checkLastMove()) {
     let pointer = pointers.find((p) => p.id == -1);
@@ -2053,6 +2064,7 @@ window.addEventListener("mouseup", () => {
 });
 
 window.addEventListener("touchstart", (e) => {
+  if (isUiPointerEvent(e)) return;
   e.preventDefault();
   const touches = e.touches;
   while (touches.length >= pointers.length) pointers.push(new pointerPrototype());
@@ -2066,6 +2078,7 @@ window.addEventListener("touchstart", (e) => {
 window.addEventListener(
   "touchmove",
   (e) => {
+    if (isUiPointerEvent(e)) return;
     e.preventDefault();
     const touches = e.touches;
     for (let i = 0; i < touches.length; i++) {

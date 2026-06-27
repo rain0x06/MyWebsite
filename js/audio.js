@@ -659,6 +659,7 @@
       trackListEl.addEventListener("click", (event) => {
         const row = event.target.closest(".track-row");
         if (!row) return;
+        if (row.dataset.spotifyUrl || row.dataset.trackIndex == null) return;
         selectSpotifyTrack(randomizedTracks[Number(row.dataset.trackIndex)], { autoplay: true });
       });
     }
@@ -686,6 +687,7 @@
     play,
     pause,
     toggle,
+    formatTime,
     openTrackPicker: () => setTrackPickerOpen(true),
     closeTrackPicker: () => setTrackPickerOpen(false),
     toggleTrackPicker,
