@@ -155,6 +155,8 @@
     audioFolder.add(sim.config, "BASS_SWAY_AMOUNT", 0, 2, 0.01).name("Bass Sway");
     audioFolder.add(sim.config, "SWIRL_RESPONSE", 0, 3, 0.01).name("Swirl Response");
     audioFolder.add(sim.config, "BUBBLE_INTENSITY", 0, 2, 0.01).name("Bubble Intensity");
+    audioFolder.add(sim.config, "SMOKE_RING_POINTS", 5, 12, 1).name("Ring Points");
+    audioFolder.add(sim.config, "SMOKE_RING_RADIUS", 0.015, 0.14, 0.001).name("Ring Radius");
     audioFolder.add(sim.config, "KICK_LOW_HZ", 10, 220, 1).name("Kick Low Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "KICK_HIGH_HZ", 40, 300, 1).name("Kick High Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "BASS_LOW_HZ", 80, 260, 1).name("Bass Low Hz").onChange(refreshBands);
