@@ -16,7 +16,10 @@
   const spotifyPlayerCover = document.getElementById("spotifyPlayerCover");
   const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
   const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
+  const spotifyShuffle = document.getElementById("spotifyShuffle");
+  const spotifyPrevious = document.getElementById("spotifyPrevious");
   const spotifyPlayerPlay = document.getElementById("spotifyPlayerPlay");
+  const spotifyNext = document.getElementById("spotifyNext");
   const spotifyCurrentTime = document.getElementById("spotifyCurrentTime");
   const spotifyDuration = document.getElementById("spotifyDuration");
   const spotifySeek = document.getElementById("spotifySeek");
@@ -90,7 +93,7 @@
 
   async function enterSite() {
     unlockGate();
-    window.FluidAudio.enterIdle();
+    await window.FluidAudio.autoplay();
   }
 
   enterGate.addEventListener("pointerdown", (event) => {
@@ -132,7 +135,10 @@
     spotifyPlayerCover,
     spotifyPlayerTitle,
     spotifyPlayerArtist,
+    spotifyShuffle,
+    spotifyPrevious,
     spotifyPlayerPlay,
+    spotifyNext,
     spotifyCurrentTime,
     spotifyDuration,
     spotifySeek,

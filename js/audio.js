@@ -92,7 +92,10 @@
   let spotifyPlayerCover = null;
   let spotifyPlayerTitle = null;
   let spotifyPlayerArtist = null;
+  let spotifyShuffle = null;
+  let spotifyPrevious = null;
   let spotifyPlayerPlay = null;
+  let spotifyNext = null;
   let spotifyCurrentTime = null;
   let spotifyDuration = null;
   let spotifySeek = null;
@@ -102,6 +105,7 @@
   let randomizedTracks = [];
   let spotifyEmbedTrack = "";
   let localTrackManifest = null;
+  let localTrackManifestPromise = null;
 
   function setStatus(text) {
     if (statusEl) statusEl.textContent = text;
@@ -143,8 +147,8 @@
       spotifyPlayerPlay.classList.toggle("is-playing", isPlaying);
       spotifyPlayerPlay.setAttribute("aria-label", isPlaying ? "Pause track" : "Play track");
     }
-    document.body.classList.toggle("is-entered", isPlaying);
-    document.body.classList.toggle("is-locked", !isPlaying);
+    document.body.classList.add("is-entered");
+    document.body.classList.remove("is-locked");
   }
 
   function setTrackPickerOpen(isOpen) {
@@ -235,10 +239,27 @@
     } catch (error) {
       localTrackManifest = null;
     }
+    if (selectedPlaylistTrack && !hasLocalTrack(selectedPlaylistTrack)) {
+      const firstPlayable = randomizedTracks.find((track) => hasLocalTrack(track));
+      if (firstPlayable) {
+        selectedPlaylistTrack = firstPlayable;
+        updateSpotifyPlayer(firstPlayable);
+        updateSelectedRows();
+        setStatus(firstPlayable.title);
+      }
+    }
     if (selectedPlaylistTrack && audioEl && !audioEl.dataset.trackSrc) {
       const localUrl = resolveLocalTrackUrl(selectedPlaylistTrack);
       if (localUrl) prepareLocalAudioSource(localUrl, selectedPlaylistTrack.title);
     }
+  }
+
+  function ensureLocalTrackManifest() {
+    if (localTrackManifest) return Promise.resolve(localTrackManifest);
+    if (!localTrackManifestPromise) {
+      localTrackManifestPromise = loadLocalTrackManifest().then(() => localTrackManifest);
+    }
+    return localTrackManifestPromise;
   }
 
   function resolveLocalTrackUrl(track) {
@@ -247,6 +268,42 @@
     if (!manifestValue) return null;
     const fileName = manifestValue === true ? track.audioFile : String(manifestValue);
     return `${LOCAL_TRACK_BASE}${fileName.split("/").map(encodeURIComponent).join("/")}`;
+  }
+
+  function hasLocalTrack(track) {
+    return Boolean(resolveLocalTrackUrl(track));
+  }
+
+  function selectedTrackIndex() {
+    if (!selectedPlaylistTrack) return -1;
+    return randomizedTracks.findIndex((track) => track.embed === selectedPlaylistTrack.embed);
+  }
+
+  function findPlayableTrack(startIndex, direction) {
+    if (!randomizedTracks.length) return null;
+    const step = direction < 0 ? -1 : 1;
+    for (let offset = 0; offset < randomizedTracks.length; offset += 1) {
+      const index = (startIndex + offset * step + randomizedTracks.length) % randomizedTracks.length;
+      const track = randomizedTracks[index];
+      if (hasLocalTrack(track)) return track;
+    }
+    return null;
+  }
+
+  function animateControl(control) {
+    if (!control) return;
+    control.classList.remove("is-bumped");
+    void control.offsetWidth;
+    control.classList.add("is-bumped");
+  }
+
+  function animatePlayerTransition(direction) {
+    if (!trackPickerPanel) return;
+    const panel = trackPickerPanel.querySelector(".spotify-player");
+    if (!panel) return;
+    panel.classList.remove("is-moving-next", "is-moving-previous", "is-shuffling");
+    void panel.offsetWidth;
+    panel.classList.add(direction === "previous" ? "is-moving-previous" : direction === "shuffle" ? "is-shuffling" : "is-moving-next");
   }
 
   function ensureAudioRuntime() {
@@ -365,6 +422,7 @@
   }
 
   async function playSelectedPlaylistTrack() {
+    await ensureLocalTrackManifest();
     if (!selectedPlaylistTrack) return toggle();
     const localUrl = resolveLocalTrackUrl(selectedPlaylistTrack);
     if (localUrl) {
@@ -385,7 +443,7 @@
     return false;
   }
 
-  async function selectSpotifyTrack(track) {
+  async function selectSpotifyTrack(track, options = {}) {
     if (!track) return;
     selectedPlaylistTrack = track;
     clearLocalAudioSource();
@@ -395,6 +453,51 @@
     const localUrl = resolveLocalTrackUrl(track);
     if (localUrl) await prepareLocalAudioSource(localUrl, track.title);
     updateSelectedRows();
+    if (options.autoplay) return playSelectedPlaylistTrack();
+    return false;
+  }
+
+  async function playTrack(track, direction = "next") {
+    await ensureLocalTrackManifest();
+    if (!track || !hasLocalTrack(track)) return false;
+    animatePlayerTransition(direction);
+    return selectSpotifyTrack(track, { autoplay: true });
+  }
+
+  async function playNextTrack(direction = "next") {
+    await ensureLocalTrackManifest();
+    const current = selectedTrackIndex();
+    const start = current < 0 ? 0 : current + (direction === "previous" ? -1 : 1);
+    const track = findPlayableTrack(start, direction === "previous" ? -1 : 1);
+    if (!track) {
+      setStatus("add local MP3");
+      return false;
+    }
+    return playTrack(track, direction);
+  }
+
+  async function shuffleAndPlay() {
+    await ensureLocalTrackManifest();
+    randomizedTracks = shuffleTracks(randomizedTracks.length ? randomizedTracks : playlistTracks);
+    renderPlaylist();
+    animatePlayerTransition("shuffle");
+    const firstPlayable = randomizedTracks.find((track) => hasLocalTrack(track));
+    if (!firstPlayable) {
+      setStatus("add local MP3");
+      return false;
+    }
+    return selectSpotifyTrack(firstPlayable, { autoplay: true });
+  }
+
+  async function autoplay() {
+    await ensureLocalTrackManifest();
+    const selectedPlayable = selectedPlaylistTrack && hasLocalTrack(selectedPlaylistTrack)
+      ? selectedPlaylistTrack
+      : findPlayableTrack(Math.max(0, selectedTrackIndex()), 1);
+    if (selectedPlayable) return playTrack(selectedPlayable, "next");
+    setEnteredIdle();
+    setStatus("add local MP3");
+    return false;
   }
 
   function setTrackFromFile(file) {
@@ -419,13 +522,16 @@
     spotifyPlayerCover = options.spotifyPlayerCover;
     spotifyPlayerTitle = options.spotifyPlayerTitle;
     spotifyPlayerArtist = options.spotifyPlayerArtist;
+    spotifyShuffle = options.spotifyShuffle;
+    spotifyPrevious = options.spotifyPrevious;
     spotifyPlayerPlay = options.spotifyPlayerPlay;
+    spotifyNext = options.spotifyNext;
     spotifyCurrentTime = options.spotifyCurrentTime;
     spotifyDuration = options.spotifyDuration;
     spotifySeek = options.spotifySeek;
     randomizedTracks = shuffleTracks(playlistTracks);
     selectedPlaylistTrack = randomizedTracks[0] || null;
-    loadLocalTrackManifest();
+    localTrackManifestPromise = loadLocalTrackManifest().then(() => localTrackManifest);
 
     if (!audioEl || !window.FluidSimulation) {
       setStatus("audio unavailable");
@@ -440,10 +546,31 @@
 
     if (playButton) playButton.addEventListener("click", toggle);
     if (changeTrackButton) changeTrackButton.addEventListener("click", () => setTrackPickerOpen(true));
+    if (spotifyShuffle) {
+      spotifyShuffle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        animateControl(spotifyShuffle);
+        shuffleAndPlay();
+      });
+    }
+    if (spotifyPrevious) {
+      spotifyPrevious.addEventListener("click", (event) => {
+        event.stopPropagation();
+        animateControl(spotifyPrevious);
+        playNextTrack("previous");
+      });
+    }
     if (spotifyPlayerPlay) {
       spotifyPlayerPlay.addEventListener("click", (event) => {
         event.stopPropagation();
         toggle();
+      });
+    }
+    if (spotifyNext) {
+      spotifyNext.addEventListener("click", (event) => {
+        event.stopPropagation();
+        animateControl(spotifyNext);
+        playNextTrack("next");
       });
     }
     if (spotifySeek) {
@@ -479,7 +606,7 @@
       trackListEl.addEventListener("click", (event) => {
         const row = event.target.closest(".track-row");
         if (!row) return;
-        selectSpotifyTrack(randomizedTracks[Number(row.dataset.trackIndex)]);
+        selectSpotifyTrack(randomizedTracks[Number(row.dataset.trackIndex)], { autoplay: true });
       });
     }
 
@@ -495,10 +622,12 @@
     audioEl.addEventListener("ended", () => {
       setPlayingUi(false);
       updateTimeline();
+      playNextTrack("next");
     });
   }
 
   window.FluidAudio = {
+    autoplay,
     enterIdle: setEnteredIdle,
     init,
     play,

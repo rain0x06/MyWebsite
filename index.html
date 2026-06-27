@@ -14,7 +14,7 @@
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="stylesheet" href="styles.css?v=20260627-player4">
+    <link rel="stylesheet" href="styles.css?v=20260627-transport5">
     <script src="js/dat.gui.min.js"></script>
   </head>
   <body class="is-locked">
@@ -31,7 +31,7 @@
         <span>MP3</span>
         <input id="trackPicker" type="file" accept="audio/mpeg,audio/mp3">
       </label>
-      <button class="audio-button" id="changeTrack" type="button">Change Track</button>
+      <button class="audio-button" id="changeTrack" type="button">Spotify Overlay</button>
       <span class="audio-status" id="audioStatus" aria-live="polite">demo loaded</span>
     </section>
 
@@ -46,11 +46,11 @@
               <p class="spotify-player__artist" id="spotifyPlayerArtist">Spotify playlist</p>
             </div>
             <span class="spotify-player__saved" aria-label="Saved track"></span>
-            <div class="spotify-player__controls" aria-label="Spotify preview controls">
-              <span class="spotify-icon spotify-icon--shuffle" aria-hidden="true"></span>
-              <span class="spotify-icon spotify-icon--previous" aria-hidden="true"></span>
+            <div class="spotify-player__controls" aria-label="Playlist controls">
+              <button class="spotify-icon spotify-icon--shuffle" id="spotifyShuffle" type="button" aria-label="Shuffle playlist"></button>
+              <button class="spotify-icon spotify-icon--previous" id="spotifyPrevious" type="button" aria-label="Previous track"></button>
               <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Play track"></button>
-              <span class="spotify-icon spotify-icon--next" aria-hidden="true"></span>
+              <button class="spotify-icon spotify-icon--next" id="spotifyNext" type="button" aria-label="Next track"></button>
               <span class="spotify-icon spotify-icon--device" aria-hidden="true"></span>
             </div>
             <div class="spotify-player__timeline" aria-label="Track progress">
@@ -97,7 +97,7 @@
     </dialog>
 
     <script src="js/fluid.js"></script>
-    <script src="js/audio.js?v=20260627-player4"></script>
-    <script src="js/main.js?v=20260627-player4"></script>
+    <script src="js/audio.js?v=20260627-transport5"></script>
+    <script src="js/main.js?v=20260627-transport5"></script>
   </body>
 </html>

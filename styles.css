@@ -213,17 +213,31 @@ body.is-entered .enter-gate {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
+  gap: 20px;
   padding: 12px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .spotify-player {
   display: grid;
-  grid-template-columns: 48px minmax(240px, 1.45fr) 22px minmax(160px, 220px) minmax(130px, 0.75fr);
+  grid-template-columns: 48px minmax(180px, 1.3fr) 22px minmax(144px, 188px) minmax(190px, 0.9fr);
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   min-width: 0;
+}
+
+.spotify-player.is-moving-next,
+.spotify-player.is-moving-previous,
+.spotify-player.is-shuffling {
+  animation: player-nudge 240ms ease-out;
+}
+
+.spotify-player.is-moving-previous {
+  animation-name: player-nudge-back;
+}
+
+.spotify-player.is-shuffling {
+  animation-name: player-shuffle;
 }
 
 .spotify-player__cover {
@@ -287,17 +301,27 @@ body.is-entered .enter-gate {
   min-width: 0;
   align-items: center;
   justify-content: center;
-  gap: 17px;
+  gap: 15px;
   color: rgba(255, 255, 255, 0.74);
 }
 
 .spotify-icon {
   position: relative;
-  display: inline-block;
+  display: inline-grid;
   width: 18px;
   height: 18px;
+  padding: 0;
+  border: 0;
   flex: 0 0 18px;
+  place-items: center;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
   opacity: 0.92;
+}
+
+.spotify-icon.is-bumped {
+  animation: control-bump 220ms ease-out;
 }
 
 .spotify-icon--previous::before,
@@ -360,6 +384,7 @@ body.is-entered .enter-gate {
 }
 
 .spotify-icon--device {
+  display: inline-block;
   width: 18px;
   height: 13px;
   border: 2px solid currentColor;
@@ -423,7 +448,7 @@ body.is-entered .enter-gate {
 
 .spotify-player__timeline {
   display: grid;
-  grid-template-columns: 34px minmax(90px, 1fr) 34px;
+  grid-template-columns: 38px minmax(86px, 1fr) 38px;
   align-items: center;
   gap: 8px;
   color: rgba(255, 255, 255, 0.84);
@@ -496,7 +521,7 @@ body.is-entered .enter-gate {
 
 .track-picker__close {
   display: inline-grid;
-  min-width: 58px;
+  min-width: 64px;
   height: 32px;
   place-items: center;
   border: 0;
@@ -661,19 +686,19 @@ body.is-entered .enter-gate {
 
 .track-badge,
 .track-video {
-  display: inline-flex;
+  display: inline-grid;
   flex: 0 0 auto;
-  width: 13px;
-  height: 13px;
-  align-items: center;
-  justify-content: center;
+  width: 14px;
+  height: 14px;
+  place-items: center;
   border-radius: 2px;
   color: #121212;
   background: rgba(255, 255, 255, 0.78);
-  font-size: 0.58rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.6rem;
   font-weight: 900;
-  line-height: 1;
-  vertical-align: 0;
+  line-height: 14px;
+  text-align: center;
 }
 
 .track-video {
@@ -684,8 +709,9 @@ body.is-entered .enter-gate {
 .track-video::before {
   content: "";
   position: absolute;
-  left: 5px;
-  top: 3px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-42%, -50%);
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-left: 6px solid #121212;
@@ -693,6 +719,58 @@ body.is-entered .enter-gate {
 
 .track-dot {
   color: rgba(255, 255, 255, 0.38);
+}
+
+@keyframes control-bump {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.18);
+    color: #fff;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes player-nudge {
+  0% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes player-nudge-back {
+  0% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes player-shuffle {
+  0% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-2px);
+  }
+  70% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 820px) {
