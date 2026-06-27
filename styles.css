@@ -29,42 +29,13 @@ a {
   color: inherit;
 }
 
-.backdrop-video {
-  position: fixed;
-  inset: 0;
-  z-index: -3;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  filter: saturate(0.96) contrast(1.04) brightness(0.9);
-  transform: scale(1.02);
-}
-
 .fluid-canvas {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
   width: 100%;
   height: 100%;
-  opacity: 0;
-  mix-blend-mode: screen;
-  pointer-events: none;
-  transition: opacity 520ms ease;
-}
-
-body.is-entered .fluid-canvas {
-  opacity: 0.92;
-}
-
-body.is-locked .backdrop-video {
-  filter: saturate(0.72) contrast(1.06) brightness(0.48) blur(18px);
-  transform: scale(1.08);
-}
-
-body.is-entered .backdrop-video {
-  filter: saturate(0.96) contrast(1.04) brightness(0.9);
-  transform: scale(1.02);
+  display: block;
 }
 
 .enter-gate {
@@ -116,6 +87,70 @@ body.is-entered .enter-gate {
   opacity: 0;
   pointer-events: none;
   transition: opacity 360ms ease;
+}
+
+.audio-panel {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 6;
+  display: flex;
+  max-width: calc(100vw - 48px);
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--glass);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px) saturate(130%);
+}
+
+.audio-button,
+.file-picker {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.07);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.audio-button:hover,
+.audio-button:focus-visible,
+.file-picker:hover,
+.file-picker:focus-within {
+  color: #fff;
+  border-color: rgba(124, 255, 197, 0.42);
+  background: rgba(124, 255, 197, 0.12);
+  outline: none;
+}
+
+.file-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.audio-status {
+  max-width: min(360px, 44vw);
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .site-header {
@@ -264,6 +299,17 @@ body.is-entered .site-header {
 
   .contact-warning form {
     padding: 18px;
+  }
+
+  .audio-panel {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    gap: 8px;
+  }
+
+  .audio-status {
+    max-width: 34vw;
   }
 
   .warning-actions {

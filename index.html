@@ -15,19 +15,26 @@
     <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
     <link rel="stylesheet" href="styles.css">
+    <script src="js/dat.gui.min.js"></script>
   </head>
   <body class="is-locked">
-    <video class="backdrop-video" id="backdropVideo" muted loop playsinline preload="auto" poster="assets/daylight-poster.jpg">
-      <source src="assets/daylight.mp4" type="video/mp4">
-    </video>
-    <audio id="siteAudio" preload="auto" loop>
+    <canvas class="fluid-canvas" id="fluidCanvas" aria-hidden="true"></canvas>
+    <audio id="track" preload="auto" loop>
       <source src="HUNCHO%20JACK%2C%20Travis%20Scott%2C%20Quavo%20-%20Where%20U%20From%20(Audio).mp3" type="audio/mpeg">
     </audio>
-    <canvas class="fluid-canvas" id="fluidCanvas" aria-hidden="true"></canvas>
 
     <button class="enter-gate" id="enterGate" type="button" aria-label="Click to enter">
       <span>click to enter</span>
     </button>
+
+    <section class="audio-panel" aria-label="Audio controls">
+      <button class="audio-button" id="playToggle" type="button">Play</button>
+      <label class="file-picker">
+        <span>MP3</span>
+        <input id="trackPicker" type="file" accept="audio/mpeg,audio/mp3">
+      </label>
+      <span class="audio-status" id="audioStatus">demo loaded</span>
+    </section>
 
     <header class="site-header" aria-label="Primary links">
       <a class="icon-link" id="discordLink" href="https://discord.com/users/1119270545633058837" target="_blank" rel="noreferrer" aria-label="Add rain0x on Discord" title="Discord">
@@ -59,7 +66,8 @@
       </form>
     </dialog>
 
-    <script src="fluid-visualizer.js"></script>
-    <script src="script.js"></script>
+    <script src="js/fluid.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

@@ -4,19 +4,20 @@ Static personal site for `rain0x.me`.
 
 ## Files
 
-- `index.html` - page markup, icons, and metadata.
-- `styles.css` - full-screen video layout, blurred enter gate, and top-right icon styling.
-- `script.js` - click-to-enter video/audio/fluid start behavior.
-- `fluid-visualizer.js` - WebGL fluid simulation, audio analysis, beat/vocal splats, and pointer motion response.
-- `assets/daylight.mp4` - background video/audio.
-- `assets/daylight-poster.jpg` - paused-video poster frame shown before entry.
+- `index.html` - page markup, fluid canvas, audio element, controls, icons, and metadata.
+- `styles.css` - full-screen fluid backdrop, entry gate, audio controls, and top-right icon styling.
+- `js/fluid.js` - Lively WebGL fluid solver port, shaders, pointer splats, audio-to-fluid choreography, and exported simulation API.
+- `js/audio.js` - Web Audio setup, bundled demo track handling, MP3 file swapping, and play/pause state.
+- `js/main.js` - entry gate, tab title effect, Discord warning, and dat.gui controls.
+- `js/dat.gui.min.js` - tuning panel dependency from the original Lively/WebGL Fluid setup.
+- `js/LDR_LLL1_0.png` - dithering texture used by the display shader.
 - `assets/rain-pfp.png` - favicon, preview image, and avatar.
 - `HUNCHO JACK, Travis Scott, Quavo - Where U From (Audio).mp3` - post-entry audio source for the visualizer.
 - `CNAME` - GitHub Pages custom-domain file.
 
 ## Visualizer Attribution
 
-The fluid renderer follows the WebGL fluid pipeline used by Pavel Dobryakov's MIT-licensed WebGL Fluid Simulation and the Lively Wallpaper fork: splats, curl/vorticity confinement, pressure projection, gradient subtraction, advection, and final display. This site adds local MP3 analysis for bass onsets, vocal-band movement, and mouse speed/acceleration splats.
+The fluid renderer is ported from the MIT-licensed `rocksdanister/WebGL-Fluid-Simulation` `lively` branch, a fork of Pavel Dobryakov's WebGL Fluid Simulation. The original solver/shader pipeline is preserved and the Lively audio/property glue is replaced with browser MP3 analysis, file input, dat.gui controls, and mouse/touch backdrop input.
 
 ## Free Hosting
 
