@@ -150,8 +150,15 @@
     audioFolder.add(sim.config, "BEAT_SENSITIVITY", 0.5, 4, 0.01).name("Beat Sensitivity");
     audioFolder.add(sim.config, "VOCAL_SENSITIVITY", 0, 4, 0.01).name("Vocal Sensitivity");
     audioFolder.add(sim.config, "VOCAL_DANCE_AMOUNT", 0, 3, 0.01).name("Dance Amount");
+    audioFolder.add(sim.config, "SWAY_SPEED", 0.02, 1.5, 0.01).name("Sway Speed");
+    audioFolder.add(sim.config, "SWAY_RADIUS", 0, 0.35, 0.01).name("Sway Radius");
+    audioFolder.add(sim.config, "BASS_SWAY_AMOUNT", 0, 2, 0.01).name("Bass Sway");
+    audioFolder.add(sim.config, "SWIRL_RESPONSE", 0, 3, 0.01).name("Swirl Response");
+    audioFolder.add(sim.config, "BUBBLE_INTENSITY", 0, 2, 0.01).name("Bubble Intensity");
     audioFolder.add(sim.config, "KICK_LOW_HZ", 10, 220, 1).name("Kick Low Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "KICK_HIGH_HZ", 40, 300, 1).name("Kick High Hz").onChange(refreshBands);
+    audioFolder.add(sim.config, "BASS_LOW_HZ", 80, 260, 1).name("Bass Low Hz").onChange(refreshBands);
+    audioFolder.add(sim.config, "BASS_HIGH_HZ", 180, 700, 1).name("Bass High Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "VOCAL_LOW_HZ", 120, 900, 1).name("Vocal Low Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "VOCAL_HIGH_HZ", 1200, 5000, 1).name("Vocal High Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "PRESENCE_LOW_HZ", 2500, 7000, 1).name("Presence Low Hz").onChange(refreshBands);

@@ -57,6 +57,11 @@ let config = {
   BEAT_SENSITIVITY: 1.65,
   VOCAL_DANCE_AMOUNT: 0.55,
   VOCAL_SENSITIVITY: 0.65,
+  SWAY_SPEED: 0.22,
+  SWAY_RADIUS: 0.12,
+  BASS_SWAY_AMOUNT: 0.7,
+  SWIRL_RESPONSE: 0.9,
+  BUBBLE_INTENSITY: 0.8,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
   KICK_LOW_HZ: 20,
@@ -74,14 +79,19 @@ var timer = setInterval(randomSplat, 3500);
 var _runRandom = true;
 let audioRuntime = null;
 let baseCurl = config.CURL;
+let baseColorUpdateSpeed = config.COLOR_UPDATE_SPEED;
 let baseBloomIntensity = config.BLOOM_INTENSITY;
 let baseSplatRadius = config.SPLAT_RADIUS;
 let audioVisualState = {
   kick: 0,
+  bass: 0,
   presence: 0,
   vocal: 0,
+  pitch: 0.5,
   rms: 0,
   time: 0,
+  swayX: 0.5,
+  swayY: 0.5,
 };
 
 function randomSplat() {
@@ -1259,6 +1269,20 @@ function makeRmsFollower(attackSec = 0.08, releaseSec = 0.32) {
   };
 }
 
+function measureBandCentroid(freqData, band) {
+  let total = 0;
+  let weighted = 0;
+  for (let i = band[0]; i <= band[1]; i++) {
+    const energy = freqData[i];
+    total += energy;
+    weighted += energy * i;
+  }
+
+  if (total <= 0) return 0.5;
+  const span = Math.max(1, band[1] - band[0]);
+  return clamp01((weighted / total - band[0]) / span);
+}
+
 function createAudioRuntime(audioEl) {
   const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextCtor) {
@@ -1284,11 +1308,14 @@ function createAudioRuntime(audioEl) {
     timeData: new Uint8Array(analyser.fftSize),
     kickDetector: makeOnsetDetector(),
     presenceDetector: makeOnsetDetector(),
-    vocalFollower: makeEnvelopeFollower(0.06, 0.25),
+    bassFollower: makeEnvelopeFollower(0.14, 0.7),
+    vocalFollower: makeEnvelopeFollower(0.08, 0.42),
     rmsFollower: makeRmsFollower(0.08, 0.32),
     bands: null,
     objectUrl: null,
     lastSway: 0,
+    lastPresence: 0,
+    pitch: 0.5,
   };
 
   updateAudioBands(runtime);
@@ -1346,18 +1373,19 @@ function pointerBiasPosition() {
 }
 
 function emitBeatSplats(strength) {
-  const amount = Math.max(1, Math.min(3, Math.ceil(strength)));
+  const amount = Math.max(1, Math.min(2, Math.ceil(strength * config.BUBBLE_INTENSITY)));
   for (let i = 0; i < amount; i++) {
     const color = generateColor();
     const pos = pointerBiasPosition();
     const angle = Math.random() * Math.PI * 2;
     const radiusBefore = config.SPLAT_RADIUS;
-    const force = config.SPLAT_FORCE * (0.5 + 0.5 * strength);
-    config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.45 * strength);
-    color.r *= 3.2 * Math.max(0.45, strength);
-    color.g *= 3.2 * Math.max(0.45, strength);
-    color.b *= 3.2 * Math.max(0.45, strength);
+    const force = config.SPLAT_FORCE * (0.18 + 0.16 * strength) * config.BUBBLE_INTENSITY;
+    config.SPLAT_RADIUS = baseSplatRadius * (0.8 + 0.42 * strength);
+    color.r *= 2.1 * Math.max(0.45, strength);
+    color.g *= 2.1 * Math.max(0.45, strength);
+    color.b *= 2.1 * Math.max(0.45, strength);
     splat(pos.x, pos.y, Math.cos(angle) * force, Math.sin(angle) * force, color);
+    splat(clamp01(pos.x + Math.cos(angle) * 0.018), clamp01(pos.y + Math.sin(angle) * 0.018), -Math.cos(angle) * force * 0.45, -Math.sin(angle) * force * 0.45, color);
     config.SPLAT_RADIUS = radiusBefore;
   }
 }
@@ -1371,27 +1399,35 @@ function emitPresenceSplat(strength) {
   color.r *= 1.8 * strength;
   color.g *= 1.8 * strength;
   color.b *= 1.8 * strength;
-  splat(pos.x, pos.y, Math.cos(angle) * config.SPLAT_FORCE * 0.25, Math.sin(angle) * config.SPLAT_FORCE * 0.25, color);
+  splat(pos.x, pos.y, Math.cos(angle) * config.SPLAT_FORCE * 0.16, Math.sin(angle) * config.SPLAT_FORCE * 0.16, color);
   config.SPLAT_RADIUS = radiusBefore;
 }
 
-function emitVocalSway(vocal, dt) {
-  audioVisualState.time += dt * (0.85 + vocal * 1.8);
-  const phase = audioVisualState.time;
+function emitTrackSway(vocal, bass, pitch, dt) {
+  const energy = clamp01(vocal * 0.58 + bass * 0.42);
+  audioVisualState.time += dt * config.SWAY_SPEED * (0.55 + bass * 0.45 + vocal * 0.3);
+  const phase = audioVisualState.time + (pitch - 0.5) * 1.35;
+  const radius = config.SWAY_RADIUS * (0.65 + bass * 0.35);
+  const x = 0.5 + Math.cos(phase * 0.74 + pitch * 1.8) * radius;
+  const y = 0.5 + Math.sin(phase * 0.58 + bass * 0.9) * radius * 0.72;
+  const forceAngle = phase * 0.52 + pitch * Math.PI * 1.5;
   const color = generateColor();
-  color.r *= 1.2 + vocal * 2.4;
-  color.g *= 1.2 + vocal * 2.4;
-  color.b *= 1.2 + vocal * 2.4;
-  const force = config.SPLAT_FORCE * 0.055 * vocal * config.VOCAL_DANCE_AMOUNT;
+  color.r *= 0.9 + energy * 1.45;
+  color.g *= 0.9 + energy * 1.45;
+  color.b *= 0.9 + energy * 1.45;
+  const force = config.SPLAT_FORCE * 0.018 * energy * config.VOCAL_DANCE_AMOUNT * (0.8 + bass * config.BASS_SWAY_AMOUNT);
   const radiusBefore = config.SPLAT_RADIUS;
-  config.SPLAT_RADIUS = baseSplatRadius * (0.55 + vocal * 0.45);
-  splat(0.5 + Math.cos(phase * 0.7) * 0.16, 0.5 + Math.sin(phase * 0.9) * 0.13, Math.cos(phase) * force, Math.sin(phase) * force, color);
+  config.SPLAT_RADIUS = baseSplatRadius * (0.42 + energy * 0.38);
+  splat(x, y, Math.cos(forceAngle) * force, Math.sin(forceAngle) * force, color);
   config.SPLAT_RADIUS = radiusBefore;
+  audioVisualState.swayX = x;
+  audioVisualState.swayY = y;
 }
 
 function updateAudioInputs(dt) {
   if (!audioRuntime || audioRuntime.audioEl.paused || audioRuntime.audioEl.ended || !audioRuntime.bands) {
     config.CURL = baseCurl;
+    config.COLOR_UPDATE_SPEED = baseColorUpdateSpeed;
     config.BLOOM_INTENSITY = baseBloomIntensity;
     config.SPLAT_RADIUS = baseSplatRadius;
     return;
@@ -1403,30 +1439,41 @@ function updateAudioInputs(dt) {
   const nowMs = performance.now();
   const kick = audioRuntime.kickDetector(audioRuntime.freqData, audioRuntime.bands.kick, nowMs, config.BEAT_SENSITIVITY, 150);
   const presence = audioRuntime.presenceDetector(audioRuntime.freqData, audioRuntime.bands.presence, nowMs, config.BEAT_SENSITIVITY + 0.25, 95);
+  const bass = audioRuntime.bassFollower(audioRuntime.freqData, audioRuntime.bands.bass, dt);
   const vocal = audioRuntime.vocalFollower(audioRuntime.freqData, audioRuntime.bands.vocal, dt) * config.VOCAL_SENSITIVITY;
   const rms = audioRuntime.rmsFollower(audioRuntime.timeData, dt);
+  const centroid = measureBandCentroid(audioRuntime.freqData, audioRuntime.bands.vocal);
+  const pitchCoeff = 1 - Math.exp(-dt / 0.55);
+  audioRuntime.pitch += (centroid - audioRuntime.pitch) * pitchCoeff;
 
   audioVisualState.kick = kick;
+  audioVisualState.bass = bass;
   audioVisualState.presence = presence;
   audioVisualState.vocal = vocal;
+  audioVisualState.pitch = audioRuntime.pitch;
   audioVisualState.rms = rms;
   _runRandom = false;
 
-  config.CURL = baseCurl + config.VOCAL_DANCE_AMOUNT * Math.min(1, vocal) * 24;
-  config.COLOR_UPDATE_SPEED = 8 + Math.min(1, vocal) * 10;
+  const cappedVocal = Math.min(1, vocal);
+  const cappedBass = Math.min(1, bass);
+  const cappedPresence = Math.min(1, presence);
+  config.CURL = baseCurl + config.SWIRL_RESPONSE * (cappedVocal * 18 + cappedBass * 11 + cappedPresence * 7);
+  config.COLOR_UPDATE_SPEED = baseColorUpdateSpeed * (0.55 + cappedVocal * 0.25 + cappedBass * 0.2);
   config.BLOOM_INTENSITY = baseBloomIntensity * (1 + 0.35 * rms);
   config.SPLAT_RADIUS = baseSplatRadius * (1 + 0.08 * rms);
 
   if (kick > 0) {
     emitBeatSplats(kick);
-  } else if (presence > 0) {
+  } else if (presence > 0 && nowMs - audioRuntime.lastPresence > 140) {
+    audioRuntime.lastPresence = nowMs;
     emitPresenceSplat(Math.min(1, presence));
   }
 
   audioRuntime.lastSway += dt;
-  if (vocal > 0.05 && audioRuntime.lastSway > 0.055) {
+  if ((vocal > 0.04 || bass > 0.08) && audioRuntime.lastSway > 0.11) {
+    const swayDt = audioRuntime.lastSway;
     audioRuntime.lastSway = 0;
-    emitVocalSway(Math.min(1, vocal), dt);
+    emitTrackSway(cappedVocal, cappedBass, audioRuntime.pitch, swayDt);
   }
 }
 
@@ -1944,6 +1991,7 @@ function hashCode(s) {
 
 function refreshAudioBaseValues() {
   baseCurl = config.CURL;
+  baseColorUpdateSpeed = config.COLOR_UPDATE_SPEED;
   baseBloomIntensity = config.BLOOM_INTENSITY;
   baseSplatRadius = config.SPLAT_RADIUS;
 }
