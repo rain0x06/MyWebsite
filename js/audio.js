@@ -280,10 +280,6 @@
         setStatus(firstPlayable.title);
       }
     }
-    if (selectedPlaylistTrack && audioEl && !audioEl.dataset.trackSrc) {
-      const localUrl = resolveLocalTrackUrl(selectedPlaylistTrack);
-      if (localUrl) prepareLocalAudioSource(localUrl, selectedPlaylistTrack.title);
-    }
   }
 
   function ensureLocalTrackManifest() {
@@ -591,7 +587,7 @@
     setStatus(selectedPlaylistTrack ? selectedPlaylistTrack.title : "select a track");
     updateSpotifyPlayer(selectedPlaylistTrack);
     updateTimeline();
-    setTrackPickerOpen(Boolean(selectedPlaylistTrack));
+    setTrackPickerOpen(false);
 
     if (playButton) playButton.addEventListener("click", toggle);
     if (changeTrackButton) changeTrackButton.addEventListener("click", () => setTrackPickerOpen(true));

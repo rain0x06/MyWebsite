@@ -93,7 +93,14 @@
     }, 380);
   }
 
+  let hasEntered = false;
+
   async function enterSite() {
+    if (hasEntered) return;
+    hasEntered = true;
+    if (window.FluidSimulation && typeof window.FluidSimulation.setVisualizerActive === "function") {
+      window.FluidSimulation.setVisualizerActive(true);
+    }
     unlockGate();
     await window.FluidAudio.autoplay();
   }

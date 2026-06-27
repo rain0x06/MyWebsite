@@ -84,6 +84,7 @@ let config = {
 
 var timer = setInterval(randomSplat, 3500);
 var _runRandom = true;
+let visualizerActive = false;
 let audioRuntime = null;
 let baseCurl = config.CURL;
 let baseColorUpdateSpeed = config.COLOR_UPDATE_SPEED;
@@ -108,7 +109,7 @@ let audioVisualState = {
 };
 
 function randomSplat() {
-  if (_runRandom && config.AMBIENT_IDLE_SPLATS) splatStack.push(parseInt(Math.random() * 5) + 3);
+  if (visualizerActive && _runRandom && config.AMBIENT_IDLE_SPLATS) splatStack.push(parseInt(Math.random() * 5) + 3);
 }
 
 let colorRange = ["#FF0000","#FF0001"];
@@ -1187,7 +1188,6 @@ function updateKeywords() {
 
 updateKeywords();
 initFramebuffers();
-multipleSplats(1);
 
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;
@@ -1196,11 +1196,23 @@ update();
 function update() {
   const dt = calcDeltaTime();
   if (resizeCanvas()) initFramebuffers();
+  if (!visualizerActive) {
+    clearScreen();
+    requestAnimationFrame(update);
+    return;
+  }
   updateColors(dt);
   applyInputs(dt);
   if (!config.PAUSED) step(dt);
   render(null);
   requestAnimationFrame(update);
+}
+
+function clearScreen() {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
 function calcDeltaTime() {
@@ -2255,6 +2267,22 @@ function refreshAudioBaseValues() {
   baseSplatRadius = config.SPLAT_RADIUS;
 }
 
+function setVisualizerActive(isActive) {
+  const nextActive = Boolean(isActive);
+  if (visualizerActive === nextActive) return;
+  visualizerActive = nextActive;
+  splatStack.length = 0;
+  audioBubbles.length = 0;
+  audioVisualState.activeBubbles = 0;
+  pointers.forEach((pointer) => {
+    pointer.moved = false;
+  });
+  lastUpdateTime = Date.now();
+  initFramebuffers();
+  if (!visualizerActive) clearScreen();
+  document.documentElement.dataset.fluidActive = visualizerActive ? "true" : "false";
+}
+
 window.FluidSimulation = {
   canvas,
   config,
@@ -2277,6 +2305,7 @@ window.FluidSimulation = {
   updateKeywords,
   initFramebuffers,
   refreshAudioBaseValues,
+  setVisualizerActive,
   splat,
   multipleSplats,
   renderNow() {
@@ -2285,3 +2314,4 @@ window.FluidSimulation = {
 };
 
 document.documentElement.dataset.fluidVisualizer = "lively-port-loaded";
+document.documentElement.dataset.fluidActive = "false";
