@@ -237,15 +237,18 @@
     trackListEl = options.trackListEl;
     spotifyEmbedEl = options.spotifyEmbedEl;
     randomizedTracks = shuffleTracks(playlistTracks);
+    selectedPlaylistTrack = randomizedTracks[0] || null;
 
     if (!audioEl || !window.FluidSimulation) {
       setStatus("audio unavailable");
       return;
     }
 
-    audioEl.dataset.trackName = "Where U From demo";
+    audioEl.dataset.trackName = selectedPlaylistTrack ? selectedPlaylistTrack.title : "Where U From demo";
     const runtime = window.FluidSimulation.initAudio(audioEl);
-    setStatus(runtime ? "demo loaded" : "audio unsupported");
+    setStatus(runtime ? audioEl.dataset.trackName : "audio unsupported");
+    renderSpotifyEmbed(selectedPlaylistTrack);
+    setTrackPickerOpen(Boolean(selectedPlaylistTrack));
 
     if (playButton) playButton.addEventListener("click", toggle);
     if (changeTrackButton) changeTrackButton.addEventListener("click", () => setTrackPickerOpen(true));

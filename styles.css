@@ -186,7 +186,7 @@ body.is-entered .enter-gate {
 .track-picker {
   position: fixed;
   inset: 0;
-  z-index: 18;
+  z-index: 24;
 }
 
 .track-picker__scrim {
