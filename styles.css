@@ -221,7 +221,7 @@ body.is-entered .enter-gate {
 
 .spotify-player {
   display: grid;
-  grid-template-columns: 48px minmax(190px, 1fr) 22px minmax(190px, 300px) minmax(180px, 1.2fr);
+  grid-template-columns: 48px minmax(240px, 1.45fr) 22px minmax(160px, 220px) minmax(130px, 0.75fr);
   align-items: center;
   gap: 12px;
   min-width: 0;
