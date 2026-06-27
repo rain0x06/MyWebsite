@@ -241,7 +241,7 @@ body.is-entered .enter-gate {
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 10px;
-  padding: 10px;
+  padding: 10px 14px 10px 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   cursor: grab;
   user-select: none;
@@ -253,7 +253,7 @@ body.is-entered .enter-gate {
 
 .spotify-player {
   display: grid;
-  grid-template-columns: 40px minmax(116px, 1fr) 18px minmax(128px, 154px) minmax(138px, 0.8fr);
+  grid-template-columns: 40px minmax(96px, 1fr) 18px minmax(124px, 146px) minmax(166px, 0.95fr);
   align-items: center;
   gap: 9px;
   min-width: 0;
@@ -536,7 +536,7 @@ body.is-entered .enter-gate {
 
 .spotify-player__timeline {
   display: grid;
-  grid-template-columns: 34px minmax(78px, 1fr) 34px;
+  grid-template-columns: 34px minmax(64px, 1fr) 42px;
   align-items: center;
   gap: 7px;
   color: rgba(255, 255, 255, 0.84);
@@ -546,7 +546,13 @@ body.is-entered .enter-gate {
 
 .spotify-player__time {
   font-variant-numeric: tabular-nums;
-  text-align: center;
+  min-width: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.spotify-player__time:first-child {
+  text-align: left;
 }
 
 .spotify-player__seek {
