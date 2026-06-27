@@ -405,9 +405,25 @@ body.is-entered .enter-gate {
   outline: none;
 }
 
+.spotify-play.is-playing::before,
+.spotify-play.is-playing::after {
+  content: "";
+  width: 4px;
+  height: 13px;
+  margin: 0 2px;
+  border: 0;
+  background: #000;
+}
+
+.spotify-play.is-playing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .spotify-player__timeline {
   display: grid;
-  grid-template-columns: auto minmax(90px, 1fr) auto;
+  grid-template-columns: 34px minmax(90px, 1fr) 34px;
   align-items: center;
   gap: 8px;
   color: rgba(255, 255, 255, 0.84);
@@ -415,19 +431,66 @@ body.is-entered .enter-gate {
   font-size: 0.74rem;
 }
 
-.spotify-player__bar {
-  position: relative;
+.spotify-player__time {
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.spotify-player__seek {
+  --progress: 0%;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.spotify-player__seek:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.spotify-player__seek::-webkit-slider-runnable-track {
   height: 4px;
-  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(to right, #fff 0 var(--progress), rgba(255, 255, 255, 0.34) var(--progress) 100%);
+}
+
+.spotify-player__seek::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  appearance: none;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.spotify-player__seek:hover::-webkit-slider-thumb,
+.spotify-player__seek:focus-visible::-webkit-slider-thumb {
+  opacity: 1;
+}
+
+.spotify-player__seek::-moz-range-track {
+  height: 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.34);
 }
 
-.spotify-player__bar span {
-  display: block;
-  width: 4%;
-  height: 100%;
-  border-radius: inherit;
+.spotify-player__seek::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.spotify-player__seek::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
   background: #fff;
 }
 
@@ -586,14 +649,24 @@ body.is-entered .enter-gate {
   font-weight: 650;
 }
 
+.track-artist {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .track-badge,
 .track-video {
   display: inline-flex;
-  min-width: 13px;
+  flex: 0 0 auto;
+  width: 13px;
   height: 13px;
   align-items: center;
   justify-content: center;
-  margin-right: 5px;
   border-radius: 2px;
   color: #121212;
   background: rgba(255, 255, 255, 0.78);
@@ -604,7 +677,6 @@ body.is-entered .enter-gate {
 }
 
 .track-video {
-  width: 14px;
   color: transparent;
   position: relative;
 }

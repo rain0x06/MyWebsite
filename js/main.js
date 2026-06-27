@@ -17,6 +17,9 @@
   const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
   const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
   const spotifyPlayerPlay = document.getElementById("spotifyPlayerPlay");
+  const spotifyCurrentTime = document.getElementById("spotifyCurrentTime");
+  const spotifyDuration = document.getElementById("spotifyDuration");
+  const spotifySeek = document.getElementById("spotifySeek");
 
   window.startTabTitleEffect = function startTabTitleEffect() {
     if (window.startTabTitleEffect.started) return;
@@ -130,6 +133,9 @@
     spotifyPlayerTitle,
     spotifyPlayerArtist,
     spotifyPlayerPlay,
+    spotifyCurrentTime,
+    spotifyDuration,
+    spotifySeek,
   });
 
   function setupGui() {

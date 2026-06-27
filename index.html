@@ -14,7 +14,7 @@
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="stylesheet" href="styles.css?v=20260627-audio3">
+    <link rel="stylesheet" href="styles.css?v=20260627-player4">
     <script src="js/dat.gui.min.js"></script>
   </head>
   <body class="is-locked">
@@ -49,14 +49,14 @@
             <div class="spotify-player__controls" aria-label="Spotify preview controls">
               <span class="spotify-icon spotify-icon--shuffle" aria-hidden="true"></span>
               <span class="spotify-icon spotify-icon--previous" aria-hidden="true"></span>
-              <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Show Spotify player"></button>
+              <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Play track"></button>
               <span class="spotify-icon spotify-icon--next" aria-hidden="true"></span>
               <span class="spotify-icon spotify-icon--device" aria-hidden="true"></span>
             </div>
-            <div class="spotify-player__timeline" aria-hidden="true">
-              <span>0:01</span>
-              <span class="spotify-player__bar"><span></span></span>
-              <span>3:48</span>
+            <div class="spotify-player__timeline" aria-label="Track progress">
+              <span class="spotify-player__time" id="spotifyCurrentTime">0:00</span>
+              <input class="spotify-player__seek" id="spotifySeek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek track">
+              <span class="spotify-player__time" id="spotifyDuration">0:00</span>
             </div>
           </div>
           <button class="track-picker__close" type="button" data-close-track-picker>Close</button>
@@ -97,7 +97,7 @@
     </dialog>
 
     <script src="js/fluid.js"></script>
-    <script src="js/audio.js?v=20260627-audio3"></script>
-    <script src="js/main.js?v=20260627-audio3"></script>
+    <script src="js/audio.js?v=20260627-player4"></script>
+    <script src="js/main.js?v=20260627-player4"></script>
   </body>
 </html>
