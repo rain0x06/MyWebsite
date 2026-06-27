@@ -12,6 +12,7 @@
 
   let elements = {};
   let accessToken = "";
+  let refreshToken = "";
   let tokenExpiresAt = 0;
   let pollTimer = 0;
   let liveTrackUrl = "";
@@ -39,22 +40,29 @@
     return base64Url(bytes);
   }
 
+  function storedToken() {
+    try {
+      return JSON.parse(localStorage.getItem(TOKEN_KEY) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
   function saveToken(token) {
+    const existing = storedToken();
     accessToken = token.access_token || "";
+    refreshToken = token.refresh_token || (existing && existing.refresh_token) || refreshToken || "";
     tokenExpiresAt = Date.now() + Math.max(30, Number(token.expires_in || 0) - 30) * 1000;
-    localStorage.setItem(TOKEN_KEY, JSON.stringify({ ...token, expiresAt: tokenExpiresAt }));
+    localStorage.setItem(TOKEN_KEY, JSON.stringify({ ...token, refresh_token: refreshToken, expiresAt: tokenExpiresAt }));
   }
 
   function loadToken() {
-    try {
-      const token = JSON.parse(localStorage.getItem(TOKEN_KEY) || "null");
-      if (!token || !token.access_token || Date.now() >= Number(token.expiresAt || 0)) return false;
-      accessToken = token.access_token;
-      tokenExpiresAt = Number(token.expiresAt);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    const token = storedToken();
+    if (!token) return false;
+    refreshToken = token.refresh_token || "";
+    tokenExpiresAt = Number(token.expiresAt || 0);
+    accessToken = token.access_token && Date.now() < tokenExpiresAt ? token.access_token : "";
+    return Boolean(accessToken || refreshToken);
   }
 
   async function beginAuth() {
@@ -110,17 +118,47 @@
   }
 
   async function spotifyFetch(path) {
-    if (!accessToken || Date.now() >= tokenExpiresAt) return null;
+    if (!(await ensureAccessToken())) return null;
     const response = await fetch(`${API_BASE}${path}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     if (response.status === 204) return null;
     if (response.status === 401) {
-      disconnect();
-      return null;
+      accessToken = "";
+      if (!(await refreshAccessToken())) {
+        disconnect();
+        return null;
+      }
+      return spotifyFetch(path);
     }
     if (!response.ok) throw new Error(`spotify api failed ${response.status}`);
     return response.json();
+  }
+
+  async function refreshAccessToken() {
+    if (!refreshToken && !loadToken()) return false;
+    if (!refreshToken) return false;
+    const response = await fetch(TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: clientId(),
+      }),
+    });
+    const token = await response.json().catch(() => null);
+    if (!response.ok) {
+      if (token && token.error === "invalid_grant") disconnect();
+      throw new Error(`spotify refresh failed ${response.status}`);
+    }
+    saveToken({ ...token, refresh_token: token.refresh_token || refreshToken });
+    return Boolean(accessToken);
+  }
+
+  async function ensureAccessToken() {
+    if (accessToken && Date.now() < tokenExpiresAt) return true;
+    return refreshAccessToken();
   }
 
   function formatArtists(track) {
@@ -202,7 +240,7 @@
   }
 
   async function refresh() {
-    if (!accessToken) {
+    if (!(await ensureAccessToken())) {
       renderConnect();
       return;
     }
@@ -231,6 +269,7 @@
 
   function disconnect() {
     accessToken = "";
+    refreshToken = "";
     tokenExpiresAt = 0;
     localStorage.removeItem(TOKEN_KEY);
     window.clearInterval(pollTimer);
