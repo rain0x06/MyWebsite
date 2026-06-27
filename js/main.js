@@ -16,6 +16,7 @@
   const spotifyPlayerCover = document.getElementById("spotifyPlayerCover");
   const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
   const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
+  const spotifySettings = document.getElementById("spotifySettings");
   const spotifyShuffle = document.getElementById("spotifyShuffle");
   const spotifyPrevious = document.getElementById("spotifyPrevious");
   const spotifyPlayerPlay = document.getElementById("spotifyPlayerPlay");
@@ -23,6 +24,7 @@
   const spotifyCurrentTime = document.getElementById("spotifyCurrentTime");
   const spotifyDuration = document.getElementById("spotifyDuration");
   const spotifySeek = document.getElementById("spotifySeek");
+  let controlsGui = null;
 
   window.startTabTitleEffect = function startTabTitleEffect() {
     if (window.startTabTitleEffect.started) return;
@@ -149,6 +151,7 @@
 
     const sim = window.FluidSimulation;
     const gui = new dat.GUI({ width: 320 });
+    controlsGui = gui;
     gui.domElement.id = "fluidGui";
 
     const refreshFramebuffers = () => sim.initFramebuffers();
@@ -188,7 +191,7 @@
     audioFolder.add(sim.config, "SMOKE_RING_POINTS", 5, 12, 1).name("Ring Points");
     audioFolder.add(sim.config, "SMOKE_RING_RADIUS", 0.015, 0.14, 0.001).name("Ring Radius");
     audioFolder.add(sim.config, "BUBBLE_SPEED", 0.05, 1.4, 0.01).name("Bubble Speed");
-    audioFolder.add(sim.config, "BUBBLE_TRAIL", 0.15, 1.4, 0.01).name("Bubble Trail");
+    audioFolder.add(sim.config, "BUBBLE_TRAIL", 0.03, 1.4, 0.01).name("Bubble Trail");
     audioFolder.add(sim.config, "MAX_AUDIO_BUBBLES", 2, 24, 1).name("Max Bubbles");
     audioFolder.add(sim.config, "KICK_LOW_HZ", 10, 220, 1).name("Kick Low Hz").onChange(refreshBands);
     audioFolder.add(sim.config, "KICK_HIGH_HZ", 40, 300, 1).name("Kick High Hz").onChange(refreshBands);
@@ -211,4 +214,13 @@
   }
 
   setupGui();
+
+  if (spotifySettings) {
+    spotifySettings.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (!controlsGui) return;
+      if (controlsGui.closed) controlsGui.open();
+      else controlsGui.close();
+    });
+  }
 })();

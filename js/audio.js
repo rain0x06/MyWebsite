@@ -100,6 +100,7 @@
   let spotifyDuration = null;
   let spotifySeek = null;
   let isSeeking = false;
+  let seekReleaseTimer = 0;
   let currentObjectUrl = null;
   let selectedPlaylistTrack = null;
   let randomizedTracks = [];
@@ -141,11 +142,17 @@
     return shuffled;
   }
 
+  function explicitLastTracks(tracks) {
+    return tracks.filter((track) => !track.explicit).concat(tracks.filter((track) => track.explicit));
+  }
+
   function setPlayingUi(isPlaying) {
     if (playButton) playButton.textContent = isPlaying ? "Pause" : "Play";
     if (spotifyPlayerPlay) {
       spotifyPlayerPlay.classList.toggle("is-playing", isPlaying);
       spotifyPlayerPlay.setAttribute("aria-label", isPlaying ? "Pause track" : "Play track");
+      spotifyPlayerPlay.setAttribute("title", isPlaying ? "Pause" : "Play");
+      spotifyPlayerPlay.dataset.tooltip = isPlaying ? "Pause" : "Play";
     }
     document.body.classList.add("is-entered");
     document.body.classList.remove("is-locked");
@@ -164,6 +171,8 @@
     if (spotifyPlayerPlay) {
       spotifyPlayerPlay.classList.remove("is-playing");
       spotifyPlayerPlay.setAttribute("aria-label", "Play track");
+      spotifyPlayerPlay.setAttribute("title", "Play");
+      spotifyPlayerPlay.dataset.tooltip = "Play";
     }
   }
 
@@ -288,6 +297,19 @@
       if (hasLocalTrack(track)) return track;
     }
     return null;
+  }
+
+  function beginSeek() {
+    window.clearTimeout(seekReleaseTimer);
+    isSeeking = true;
+  }
+
+  function endSeek() {
+    window.clearTimeout(seekReleaseTimer);
+    seekReleaseTimer = window.setTimeout(() => {
+      isSeeking = false;
+      updateTimeline();
+    }, 180);
   }
 
   function animateControl(control) {
@@ -478,7 +500,7 @@
 
   async function shuffleAndPlay() {
     await ensureLocalTrackManifest();
-    randomizedTracks = shuffleTracks(randomizedTracks.length ? randomizedTracks : playlistTracks);
+    randomizedTracks = explicitLastTracks(shuffleTracks(randomizedTracks.length ? randomizedTracks : playlistTracks));
     renderPlaylist();
     animatePlayerTransition("shuffle");
     const firstPlayable = randomizedTracks.find((track) => hasLocalTrack(track));
@@ -529,7 +551,7 @@
     spotifyCurrentTime = options.spotifyCurrentTime;
     spotifyDuration = options.spotifyDuration;
     spotifySeek = options.spotifySeek;
-    randomizedTracks = shuffleTracks(playlistTracks);
+    randomizedTracks = explicitLastTracks(shuffleTracks(playlistTracks));
     selectedPlaylistTrack = randomizedTracks[0] || null;
     localTrackManifestPromise = loadLocalTrackManifest().then(() => localTrackManifest);
 
@@ -575,22 +597,29 @@
     }
     if (spotifySeek) {
       spotifySeek.addEventListener("pointerdown", () => {
-        isSeeking = true;
+        beginSeek();
       });
+      spotifySeek.addEventListener("mousedown", beginSeek);
+      spotifySeek.addEventListener("touchstart", beginSeek, { passive: true });
       spotifySeek.addEventListener("input", () => {
+        beginSeek();
+        const seekRatio = Number(spotifySeek.value) / 1000;
+        spotifySeek.style.setProperty("--progress", `${Math.min(100, Math.max(0, seekRatio * 100))}%`);
         if (!audioEl || !Number.isFinite(audioEl.duration) || audioEl.duration <= 0) return;
-        const nextTime = (Number(spotifySeek.value) / 1000) * audioEl.duration;
+        const nextTime = seekRatio * audioEl.duration;
         if (spotifyCurrentTime) spotifyCurrentTime.textContent = formatTime(nextTime);
-        spotifySeek.style.setProperty("--progress", `${Math.min(100, Math.max(0, (Number(spotifySeek.value) / 1000) * 100))}%`);
       });
       spotifySeek.addEventListener("change", () => {
         if (audioEl && Number.isFinite(audioEl.duration) && audioEl.duration > 0) {
           audioEl.currentTime = (Number(spotifySeek.value) / 1000) * audioEl.duration;
         }
-        isSeeking = false;
-        updateTimeline();
+        endSeek();
       });
-      spotifySeek.addEventListener("pointerup", () => {
+      spotifySeek.addEventListener("pointerup", endSeek);
+      spotifySeek.addEventListener("pointercancel", endSeek);
+      spotifySeek.addEventListener("mouseup", endSeek);
+      spotifySeek.addEventListener("touchend", endSeek);
+      spotifySeek.addEventListener("blur", () => {
         isSeeking = false;
         updateTimeline();
       });

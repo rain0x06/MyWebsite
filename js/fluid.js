@@ -53,7 +53,7 @@ let config = {
   SUNRAYS: false,
   SUNRAYS_RESOLUTION: 196,
   SUNRAYS_WEIGHT: 0.35,
-  MOUSE_FORCE_MULTIPLIER: 0.75,
+  MOUSE_FORCE_MULTIPLIER: 3.5,
   BEAT_SENSITIVITY: 1.65,
   VOCAL_DANCE_AMOUNT: 0.55,
   VOCAL_SENSITIVITY: 0.65,
@@ -67,7 +67,7 @@ let config = {
   SMOKE_RING_POINTS: 7,
   SMOKE_RING_RADIUS: 0.02,
   BUBBLE_SPEED: 0.72,
-  BUBBLE_TRAIL: 0.16,
+  BUBBLE_TRAIL: 0.07,
   MAX_AUDIO_BUBBLES: 12,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
@@ -1564,7 +1564,7 @@ function updateAudioBubbles(dt, songEnergy) {
     }
 
     if (hit) bubble.age += 0.22;
-    if (bubble.emitTimer > 0.18 / Math.max(0.16, config.BUBBLE_TRAIL)) {
+    if (bubble.emitTimer > 0.18 / Math.max(0.04, config.BUBBLE_TRAIL)) {
       bubble.emitTimer = 0;
       emitBubbleCrescent(bubble, hit ? "hit" : "wake");
     }
