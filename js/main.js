@@ -87,7 +87,7 @@
 
   async function enterSite() {
     unlockGate();
-    await window.FluidAudio.play();
+    window.FluidAudio.enterIdle();
   }
 
   enterGate.addEventListener("pointerdown", (event) => {

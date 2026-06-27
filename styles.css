@@ -192,8 +192,7 @@ body.is-entered .enter-gate {
 .track-picker__scrim {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.44);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.34);
 }
 
 .track-picker__panel {
@@ -485,13 +484,32 @@ body.is-entered .enter-gate {
   max-height: calc(min(632px, calc(100vh - 132px)) - 240px);
 }
 
-.spotify-embed iframe {
-  display: block;
-  width: 100%;
-  min-height: 152px;
-  border: 0;
-  border-radius: 12px;
-  background: #121212;
+.spotify-link {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(30, 215, 96, 0.26);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(30, 215, 96, 0.08);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.spotify-link span {
+  color: #1ed760;
+  font-weight: 800;
+}
+
+.spotify-link strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .track-row {
@@ -508,6 +526,7 @@ body.is-entered .enter-gate {
   font: inherit;
   text-align: left;
   cursor: pointer;
+  contain: layout paint;
 }
 
 .track-row:hover,
