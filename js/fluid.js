@@ -35,7 +35,7 @@ let config = {
   VELOCITY_DISSIPATION: 0.42,
   PRESSURE: 0.8,
   PRESSURE_ITERATIONS: 12,
-  CURL: 16,
+  CURL: 10,
   SPLAT_RADIUS: 0.18,
   SPLAT_FORCE: 4200,
   SHADING: true,
@@ -60,10 +60,13 @@ let config = {
   SWAY_SPEED: 0.12,
   SWAY_RADIUS: 0.12,
   BASS_SWAY_AMOUNT: 0.7,
-  SWIRL_RESPONSE: 0.38,
-  BUBBLE_INTENSITY: 0.58,
-  SMOKE_RING_POINTS: 9,
-  SMOKE_RING_RADIUS: 0.072,
+  SWIRL_RESPONSE: 0.28,
+  BUBBLE_INTENSITY: 0.56,
+  SMOKE_RING_POINTS: 7,
+  SMOKE_RING_RADIUS: 0.09,
+  BUBBLE_SPEED: 0.56,
+  BUBBLE_TRAIL: 0.3,
+  MAX_AUDIO_BUBBLES: 6,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
   KICK_LOW_HZ: 20,
@@ -84,6 +87,7 @@ let baseCurl = config.CURL;
 let baseColorUpdateSpeed = config.COLOR_UPDATE_SPEED;
 let baseBloomIntensity = config.BLOOM_INTENSITY;
 let baseSplatRadius = config.SPLAT_RADIUS;
+let audioBubbles = [];
 let audioVisualState = {
   kick: 0,
   bass: 0,
@@ -95,6 +99,7 @@ let audioVisualState = {
   swayX: 0.5,
   swayY: 0.5,
   spawnIndex: 0,
+  activeBubbles: 0,
 };
 
 function randomSplat() {
@@ -1388,53 +1393,199 @@ function pointerBiasPosition(cursorWeight = 0.22) {
   };
 }
 
-function emitSmokeRing(strength, pitch = 0.5, cursorWeight = 0.16) {
-  const center = pointerBiasPosition(cursorWeight);
-  const points = Math.max(5, Math.min(12, Math.round(config.SMOKE_RING_POINTS)));
-  const ringRadius = config.SMOKE_RING_RADIUS * (0.72 + Math.min(1, strength) * 0.55);
-  const radiusBefore = config.SPLAT_RADIUS;
-  const baseAngle = Math.random() * Math.PI * 2 + (pitch - 0.5) * Math.PI;
-  const spin = Math.random() < 0.5 ? -1 : 1;
-  const force = config.SPLAT_FORCE * (0.006 + 0.012 * Math.min(1, strength)) * config.BUBBLE_INTENSITY;
+function trimAudioBubbles() {
+  const maxBubbles = Math.max(2, Math.min(24, Math.round(config.MAX_AUDIO_BUBBLES)));
+  while (audioBubbles.length > maxBubbles) audioBubbles.shift();
+  audioVisualState.activeBubbles = audioBubbles.length;
+}
+
+function makeBubbleColor(strength, pitch) {
   const color = generateColor();
-  const brightness = 1.15 + Math.min(1, strength) * 1.35;
+  const warmth = clamp01(pitch);
+  const brightness = 2.0 + Math.min(1, strength) * 2.2;
+  color.r *= brightness * (0.82 + warmth * 0.5);
+  color.g *= brightness * (0.78 + (1 - Math.abs(warmth - 0.5) * 2) * 0.35);
+  color.b *= brightness * (1.08 - warmth * 0.45);
+  return color;
+}
 
-  color.r *= brightness;
-  color.g *= brightness;
-  color.b *= brightness;
-  config.SPLAT_RADIUS = Math.max(0.03, baseSplatRadius * (0.2 + 0.14 * Math.min(1, strength)));
+function spawnAudioBubble(strength, pitch = 0.5, cursorWeight = 0.12) {
+  const center = pointerBiasPosition(cursorWeight);
+  const angle = Math.random() * Math.PI * 2;
+  const songSpeed = config.BUBBLE_SPEED * (0.45 + Math.min(1, strength) * 0.8 + audioVisualState.rms * 0.7);
+  const radius = config.SMOKE_RING_RADIUS * (0.65 + Math.min(1, strength) * 0.75);
 
-  for (let i = 0; i < points; i++) {
-    const theta = baseAngle + (i / points) * Math.PI * 2;
-    const ringX = clamp01(center.x + Math.cos(theta) * ringRadius);
-    const ringY = clamp01(center.y + Math.sin(theta) * ringRadius * 0.72);
-    const tangent = theta + spin * Math.PI * 0.5;
-    const roll = force * (0.82 + 0.18 * Math.sin(theta * 2 + pitch * Math.PI));
-    const dx = Math.cos(theta) * roll * 0.82 + Math.cos(tangent) * roll * 0.18;
-    const dy = Math.sin(theta) * roll * 0.82 + Math.sin(tangent) * roll * 0.18;
-    splat(ringX, ringY, dx, dy, color);
-  }
-
-  config.SPLAT_RADIUS = radiusBefore;
+  audioBubbles.push({
+    x: center.x,
+    y: center.y,
+    vx: Math.cos(angle) * songSpeed,
+    vy: Math.sin(angle) * songSpeed,
+    radius,
+    color: makeBubbleColor(strength, pitch),
+    energy: Math.min(1.4, 0.45 + strength),
+    pitch,
+    spin: Math.random() < 0.5 ? -1 : 1,
+    age: 0,
+    life: 3.2 + Math.random() * 1.8,
+    emitTimer: 0,
+  });
+  trimAudioBubbles();
   audioVisualState.swayX = center.x;
   audioVisualState.swayY = center.y;
+}
+
+function emitBubbleCrescent(bubble, hit = false) {
+  const speedAngle = Math.atan2(bubble.vy, bubble.vx);
+  const speed = Math.sqrt(bubble.vx * bubble.vx + bubble.vy * bubble.vy);
+  const life = clamp01(1 - bubble.age / bubble.life);
+  const radiusBefore = config.SPLAT_RADIUS;
+  const points = Math.max(4, Math.min(10, Math.round(config.SMOKE_RING_POINTS * 0.7)));
+  const baseForce = config.SPLAT_FORCE * (hit ? 0.022 : 0.0065) * config.BUBBLE_INTENSITY * (0.55 + bubble.energy * 0.45);
+  const headColor = bubble.color;
+
+  config.SPLAT_RADIUS = Math.max(0.18, baseSplatRadius * (hit ? 1.35 : 1.05) * (0.65 + life * 0.55));
+  splat(
+    clamp01(bubble.x + Math.cos(speedAngle) * bubble.radius * 0.72),
+    clamp01(bubble.y + Math.sin(speedAngle) * bubble.radius * 0.72),
+    Math.cos(speedAngle) * baseForce * 0.8,
+    Math.sin(speedAngle) * baseForce * 0.8,
+    headColor
+  );
+
+  config.SPLAT_RADIUS = Math.max(0.1, baseSplatRadius * 0.65 * (0.75 + life));
+  for (let i = 0; i < points; i++) {
+    const t = i / Math.max(1, points - 1);
+    const arc = speedAngle + Math.PI * (0.62 + t * 1.34) * bubble.spin;
+    const curl = arc + bubble.spin * Math.PI * 0.5;
+    const fade = (1 - t * 0.55) * life;
+    const x = clamp01(bubble.x + Math.cos(arc) * bubble.radius * (0.55 + t * 0.72) - Math.cos(speedAngle) * bubble.radius * t * 0.58);
+    const y = clamp01(bubble.y + Math.sin(arc) * bubble.radius * (0.55 + t * 0.72) - Math.sin(speedAngle) * bubble.radius * t * 0.58);
+    const color = {
+      r: headColor.r * (0.42 + fade * 0.48),
+      g: headColor.g * (0.42 + fade * 0.48),
+      b: headColor.b * (0.42 + fade * 0.48),
+    };
+    const dx = Math.cos(speedAngle) * speed * config.SPLAT_FORCE * 0.008 + Math.cos(curl) * baseForce * (0.22 + t * 0.18);
+    const dy = Math.sin(speedAngle) * speed * config.SPLAT_FORCE * 0.008 + Math.sin(curl) * baseForce * (0.22 + t * 0.18);
+    splat(x, y, dx, dy, color);
+  }
+  config.SPLAT_RADIUS = radiusBefore;
+}
+
+function emitCollisionSmoke(x, y, nx, ny, strength) {
+  const radiusBefore = config.SPLAT_RADIUS;
+  const color = generateColor();
+  const amount = Math.max(1, Math.min(3, Math.round(1 + strength * 1.4)));
+  config.SPLAT_RADIUS = Math.max(0.02, baseSplatRadius * 0.16);
+  for (let i = 0; i < amount; i++) {
+    const angle = Math.atan2(ny, nx) + (Math.random() - 0.5) * Math.PI * 1.6;
+    const force = config.SPLAT_FORCE * 0.012 * config.BUBBLE_INTENSITY * (0.5 + strength);
+    splat(
+      clamp01(x + (Math.random() - 0.5) * 0.025),
+      clamp01(y + (Math.random() - 0.5) * 0.025),
+      Math.cos(angle) * force,
+      Math.sin(angle) * force,
+      color
+    );
+  }
+  config.SPLAT_RADIUS = radiusBefore;
+}
+
+function updateAudioBubbles(dt, songEnergy) {
+  if (audioBubbles.length === 0) {
+    audioVisualState.activeBubbles = 0;
+    return;
+  }
+
+  const speedScale = 0.45 + songEnergy * 0.85;
+  for (const bubble of audioBubbles) {
+    bubble.age += dt;
+    bubble.emitTimer += dt;
+    bubble.vx *= 1 - dt * 0.16;
+    bubble.vy *= 1 - dt * 0.16;
+    bubble.x += bubble.vx * speedScale * dt;
+    bubble.y += bubble.vy * speedScale * dt;
+
+    let hit = false;
+    if (bubble.x < bubble.radius) {
+      bubble.x = bubble.radius;
+      bubble.vx = Math.abs(bubble.vx) * 0.72;
+      hit = true;
+      emitCollisionSmoke(bubble.x, bubble.y, 1, 0, bubble.energy);
+    } else if (bubble.x > 1 - bubble.radius) {
+      bubble.x = 1 - bubble.radius;
+      bubble.vx = -Math.abs(bubble.vx) * 0.72;
+      hit = true;
+      emitCollisionSmoke(bubble.x, bubble.y, -1, 0, bubble.energy);
+    }
+
+    if (bubble.y < bubble.radius) {
+      bubble.y = bubble.radius;
+      bubble.vy = Math.abs(bubble.vy) * 0.72;
+      hit = true;
+      emitCollisionSmoke(bubble.x, bubble.y, 0, 1, bubble.energy);
+    } else if (bubble.y > 1 - bubble.radius) {
+      bubble.y = 1 - bubble.radius;
+      bubble.vy = -Math.abs(bubble.vy) * 0.72;
+      hit = true;
+      emitCollisionSmoke(bubble.x, bubble.y, 0, -1, bubble.energy);
+    }
+
+    if (hit) bubble.age += 0.22;
+    if (bubble.emitTimer > 0.07 / Math.max(0.45, config.BUBBLE_TRAIL)) {
+      bubble.emitTimer = 0;
+      emitBubbleCrescent(bubble, hit);
+    }
+  }
+
+  for (let i = 0; i < audioBubbles.length; i++) {
+    for (let j = i + 1; j < audioBubbles.length; j++) {
+      const a = audioBubbles[i];
+      const b = audioBubbles[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 0.0001;
+      const minDist = (a.radius + b.radius) * 0.92;
+      if (dist >= minDist) continue;
+
+      const nx = dx / dist;
+      const ny = dy / dist;
+      const overlap = minDist - dist;
+      a.x -= nx * overlap * 0.5;
+      a.y -= ny * overlap * 0.5;
+      b.x += nx * overlap * 0.5;
+      b.y += ny * overlap * 0.5;
+
+      const impulse = ((b.vx - a.vx) * nx + (b.vy - a.vy) * ny) * 0.55;
+      a.vx += nx * impulse;
+      a.vy += ny * impulse;
+      b.vx -= nx * impulse;
+      b.vy -= ny * impulse;
+      a.age += 0.08;
+      b.age += 0.08;
+      emitCollisionSmoke((a.x + b.x) * 0.5, (a.y + b.y) * 0.5, nx, ny, Math.max(a.energy, b.energy));
+    }
+  }
+
+  audioBubbles = audioBubbles.filter((bubble) => bubble.age < bubble.life);
+  audioVisualState.activeBubbles = audioBubbles.length;
 }
 
 function emitBeatSplats(strength) {
   const amount = Math.max(1, Math.min(2, Math.ceil(strength * config.BUBBLE_INTENSITY * 0.85)));
   for (let i = 0; i < amount; i++) {
-    emitSmokeRing(strength, audioVisualState.pitch, 0.12);
+    spawnAudioBubble(strength, audioVisualState.pitch, 0.1);
   }
 }
 
 function emitPresenceSplat(strength) {
-  emitSmokeRing(strength * 0.72, audioVisualState.pitch, 0.08);
+  spawnAudioBubble(strength * 0.72, audioVisualState.pitch, 0.07);
 }
 
 function emitTrackSway(vocal, bass, pitch, dt) {
   const energy = clamp01(vocal * 0.58 + bass * 0.42);
   audioVisualState.time += dt * config.SWAY_SPEED * (0.55 + bass * 0.45 + vocal * 0.3);
-  emitSmokeRing(energy * config.VOCAL_DANCE_AMOUNT * (0.65 + bass * config.BASS_SWAY_AMOUNT * 0.35), pitch, 0.06);
+  spawnAudioBubble(energy * config.VOCAL_DANCE_AMOUNT * (0.65 + bass * config.BASS_SWAY_AMOUNT * 0.35), pitch, 0.05);
 }
 
 function updateAudioInputs(dt) {
@@ -1443,6 +1594,7 @@ function updateAudioInputs(dt) {
     config.COLOR_UPDATE_SPEED = baseColorUpdateSpeed;
     config.BLOOM_INTENSITY = baseBloomIntensity;
     config.SPLAT_RADIUS = baseSplatRadius;
+    updateAudioBubbles(dt, 0);
     return;
   }
 
@@ -1470,6 +1622,7 @@ function updateAudioInputs(dt) {
   const cappedVocal = Math.min(1, vocal);
   const cappedBass = Math.min(1, bass);
   const cappedPresence = Math.min(1, presence);
+  const songEnergy = clamp01(cappedBass * 0.48 + cappedVocal * 0.32 + rms * 1.2 + Math.min(1, kick) * 0.2);
   config.CURL = baseCurl + config.SWIRL_RESPONSE * (cappedVocal * 8 + cappedBass * 5 + cappedPresence * 3);
   config.COLOR_UPDATE_SPEED = baseColorUpdateSpeed * (0.55 + cappedVocal * 0.25 + cappedBass * 0.2);
   config.BLOOM_INTENSITY = baseBloomIntensity * (1 + 0.35 * rms);
@@ -1477,17 +1630,19 @@ function updateAudioInputs(dt) {
 
   if (kick > 0) {
     emitBeatSplats(kick);
-  } else if (presence > 0 && nowMs - audioRuntime.lastPresence > 520) {
+  } else if (presence > 0 && nowMs - audioRuntime.lastPresence > 1100) {
     audioRuntime.lastPresence = nowMs;
     emitPresenceSplat(Math.min(1, presence));
   }
 
   audioRuntime.lastSway += dt;
-  if ((vocal > 0.18 || bass > 0.22) && audioRuntime.lastSway > 0.82) {
+  if ((vocal > 0.22 || bass > 0.28) && audioRuntime.lastSway > 1.35) {
     const swayDt = audioRuntime.lastSway;
     audioRuntime.lastSway = 0;
     emitTrackSway(cappedVocal, cappedBass, audioRuntime.pitch, swayDt);
   }
+
+  updateAudioBubbles(dt, songEnergy);
 }
 
 function updateColors(dt) {
@@ -1601,6 +1756,10 @@ function render(target) {
   gl.viewport(0, 0, width, height);
 
   let fbo = target == null ? null : target.fbo;
+  if (target == null && config.TRANSPARENT) {
+    gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
   if (!config.TRANSPARENT) drawColor(fbo, normalizeColor(config.BACK_COLOR));
   //if (target == null && config.TRANSPARENT)
   //drawCheckerboard(fbo);
