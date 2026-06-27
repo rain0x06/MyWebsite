@@ -4,7 +4,7 @@
   const AUTH_URL = "https://accounts.spotify.com/authorize";
   const TOKEN_URL = "https://accounts.spotify.com/api/token";
   const API_BASE = "https://api.spotify.com/v1";
-  const CLIENT_ID_KEY = "rain0x.spotifyClientId";
+  const SPOTIFY_CLIENT_ID = "b3929ced4770403d98183fbe40cf18e7";
   const TOKEN_KEY = "rain0x.spotifyToken";
   const VERIFIER_KEY = "rain0x.spotifyVerifier";
   const STATE_KEY = "rain0x.spotifyState";
@@ -21,7 +21,7 @@
   }
 
   function clientId() {
-    return (window.RAIN0X_SPOTIFY_CLIENT_ID || localStorage.getItem(CLIENT_ID_KEY) || "").trim();
+    return SPOTIFY_CLIENT_ID;
   }
 
   function base64Url(bytes) {
@@ -58,13 +58,7 @@
   }
 
   async function beginAuth() {
-    let id = clientId();
-    if (!id) {
-      id = window.prompt("Spotify Client ID for rain0x.me");
-      if (!id) return;
-      localStorage.setItem(CLIENT_ID_KEY, id.trim());
-    }
-
+    const id = clientId();
     const verifier = randomString();
     const state = randomString();
     sessionStorage.setItem(VERIFIER_KEY, verifier);
@@ -122,7 +116,7 @@
     });
     if (response.status === 204) return null;
     if (response.status === 401) {
-      disconnect(false);
+      disconnect();
       return null;
     }
     if (!response.ok) throw new Error(`spotify api failed ${response.status}`);
@@ -154,13 +148,12 @@
   function renderConnect(message = "") {
     if (!elements.embedEl) return;
     elements.embedEl.classList.add("is-visible");
-    const hasClient = Boolean(clientId());
     elements.embedEl.innerHTML = `
       <div class="spotify-live-card">
         <div class="spotify-live-card__title">Spotify live playback</div>
-        <div class="spotify-live-card__text">${message || (hasClient ? "Connect Spotify to show your current song and queue." : "Add a Spotify Client ID once, then connect to show your current song and queue.")}</div>
+        <div class="spotify-live-card__text">${message || "Connect Spotify to show your current song and queue."}</div>
         <div class="spotify-live-actions">
-          <button class="spotify-live-button primary" type="button" data-spotify-connect>${hasClient ? "Connect Spotify" : "Set Client ID"}</button>
+          <button class="spotify-live-button primary" type="button" data-spotify-connect>Connect Spotify</button>
           ${accessToken ? '<button class="spotify-live-button" type="button" data-spotify-disconnect>Disconnect</button>' : ""}
         </div>
       </div>
@@ -236,11 +229,10 @@
     pollTimer = window.setInterval(refresh, 5000);
   }
 
-  function disconnect(clearClient = true) {
+  function disconnect() {
     accessToken = "";
     tokenExpiresAt = 0;
     localStorage.removeItem(TOKEN_KEY);
-    if (clearClient) localStorage.removeItem(CLIENT_ID_KEY);
     window.clearInterval(pollTimer);
     liveTrackUrl = "";
     renderConnect();
