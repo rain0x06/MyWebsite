@@ -31,11 +31,11 @@ let config = {
   SIM_RESOLUTION: 64,
   DYE_RESOLUTION: 512,
   CAPTURE_RESOLUTION: 512,
-  DENSITY_DISSIPATION: 1,
-  VELOCITY_DISSIPATION: 0.42,
+  DENSITY_DISSIPATION: 1.35,
+  VELOCITY_DISSIPATION: 0.55,
   PRESSURE: 0.8,
   PRESSURE_ITERATIONS: 12,
-  CURL: 10,
+  CURL: 6,
   SPLAT_RADIUS: 0.18,
   SPLAT_FORCE: 4200,
   SHADING: true,
@@ -60,13 +60,13 @@ let config = {
   SWAY_SPEED: 0.12,
   SWAY_RADIUS: 0.12,
   BASS_SWAY_AMOUNT: 0.7,
-  SWIRL_RESPONSE: 0.28,
-  BUBBLE_INTENSITY: 0.56,
+  SWIRL_RESPONSE: 0.16,
+  BUBBLE_INTENSITY: 0.68,
   SMOKE_RING_POINTS: 7,
-  SMOKE_RING_RADIUS: 0.09,
-  BUBBLE_SPEED: 0.56,
-  BUBBLE_TRAIL: 0.3,
-  MAX_AUDIO_BUBBLES: 6,
+  SMOKE_RING_RADIUS: 0.105,
+  BUBBLE_SPEED: 0.72,
+  BUBBLE_TRAIL: 0.16,
+  MAX_AUDIO_BUBBLES: 5,
   AMBIENT_IDLE_SPLATS: true,
   AUDIO_BIAS_TO_CURSOR: true,
   KICK_LOW_HZ: 20,
@@ -88,6 +88,7 @@ let baseColorUpdateSpeed = config.COLOR_UPDATE_SPEED;
 let baseBloomIntensity = config.BLOOM_INTENSITY;
 let baseSplatRadius = config.SPLAT_RADIUS;
 let audioBubbles = [];
+let lastBubbleAngle = Math.random() * Math.PI * 2;
 let audioVisualState = {
   kick: 0,
   bass: 0,
@@ -1409,64 +1410,77 @@ function makeBubbleColor(strength, pitch) {
   return color;
 }
 
+function chooseBubbleAngle() {
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  lastBubbleAngle = wrap(lastBubbleAngle + goldenAngle + (Math.random() - 0.5) * 0.46, 0, Math.PI * 2);
+  return lastBubbleAngle;
+}
+
 function spawnAudioBubble(strength, pitch = 0.5, cursorWeight = 0.12) {
   const center = pointerBiasPosition(cursorWeight);
-  const angle = Math.random() * Math.PI * 2;
-  const songSpeed = config.BUBBLE_SPEED * (0.45 + Math.min(1, strength) * 0.8 + audioVisualState.rms * 0.7);
+  const angle = chooseBubbleAngle();
+  const songSpeed = config.BUBBLE_SPEED * (0.5 + Math.min(1, strength) * 0.7 + audioVisualState.rms * 0.55);
   const radius = config.SMOKE_RING_RADIUS * (0.65 + Math.min(1, strength) * 0.75);
 
-  audioBubbles.push({
+  const bubble = {
     x: center.x,
     y: center.y,
     vx: Math.cos(angle) * songSpeed,
     vy: Math.sin(angle) * songSpeed,
+    angle,
     radius,
     color: makeBubbleColor(strength, pitch),
     energy: Math.min(1.4, 0.45 + strength),
     pitch,
     spin: Math.random() < 0.5 ? -1 : 1,
     age: 0,
-    life: 3.2 + Math.random() * 1.8,
+    life: 2.2 + Math.random() * 1.3,
     emitTimer: 0,
-  });
+  };
+  audioBubbles.push(bubble);
   trimAudioBubbles();
+  emitBubbleCrescent(bubble, "spawn");
   audioVisualState.swayX = center.x;
   audioVisualState.swayY = center.y;
 }
 
-function emitBubbleCrescent(bubble, hit = false) {
-  const speedAngle = Math.atan2(bubble.vy, bubble.vx);
+function emitBubbleCrescent(bubble, mode = "wake") {
+  const speedAngle = bubble.angle;
   const speed = Math.sqrt(bubble.vx * bubble.vx + bubble.vy * bubble.vy);
   const life = clamp01(1 - bubble.age / bubble.life);
   const radiusBefore = config.SPLAT_RADIUS;
-  const points = Math.max(4, Math.min(10, Math.round(config.SMOKE_RING_POINTS * 0.7)));
-  const baseForce = config.SPLAT_FORCE * (hit ? 0.022 : 0.0065) * config.BUBBLE_INTENSITY * (0.55 + bubble.energy * 0.45);
+  const spawn = mode === "spawn";
+  const hit = mode === "hit";
+  const points = spawn ? Math.max(6, Math.min(10, Math.round(config.SMOKE_RING_POINTS))) : Math.max(3, Math.min(6, Math.round(config.SMOKE_RING_POINTS * 0.55)));
+  const baseForce = config.SPLAT_FORCE * (hit ? 0.026 : spawn ? 0.018 : 0.0048) * config.BUBBLE_INTENSITY * (0.55 + bubble.energy * 0.45);
   const headColor = bubble.color;
 
-  config.SPLAT_RADIUS = Math.max(0.18, baseSplatRadius * (hit ? 1.35 : 1.05) * (0.65 + life * 0.55));
+  config.SPLAT_RADIUS = Math.max(0.2, baseSplatRadius * (hit ? 1.35 : spawn ? 1.65 : 0.95) * (0.65 + life * 0.55));
   splat(
-    clamp01(bubble.x + Math.cos(speedAngle) * bubble.radius * 0.72),
-    clamp01(bubble.y + Math.sin(speedAngle) * bubble.radius * 0.72),
-    Math.cos(speedAngle) * baseForce * 0.8,
-    Math.sin(speedAngle) * baseForce * 0.8,
+    clamp01(bubble.x + Math.cos(speedAngle) * bubble.radius * 0.82),
+    clamp01(bubble.y + Math.sin(speedAngle) * bubble.radius * 0.82),
+    Math.cos(speedAngle) * baseForce * 1.25,
+    Math.sin(speedAngle) * baseForce * 1.25,
     headColor
   );
 
-  config.SPLAT_RADIUS = Math.max(0.1, baseSplatRadius * 0.65 * (0.75 + life));
+  config.SPLAT_RADIUS = Math.max(0.08, baseSplatRadius * (spawn ? 0.85 : 0.48) * (0.75 + life));
   for (let i = 0; i < points; i++) {
     const t = i / Math.max(1, points - 1);
-    const arc = speedAngle + Math.PI * (0.62 + t * 1.34) * bubble.spin;
-    const curl = arc + bubble.spin * Math.PI * 0.5;
-    const fade = (1 - t * 0.55) * life;
-    const x = clamp01(bubble.x + Math.cos(arc) * bubble.radius * (0.55 + t * 0.72) - Math.cos(speedAngle) * bubble.radius * t * 0.58);
-    const y = clamp01(bubble.y + Math.sin(arc) * bubble.radius * (0.55 + t * 0.72) - Math.sin(speedAngle) * bubble.radius * t * 0.58);
+    const arc = speedAngle + Math.PI + bubble.spin * (0.42 + t * 1.52);
+    const curl = arc + bubble.spin * Math.PI * (0.5 + t * 0.28);
+    const fade = (1 - t * 0.62) * life * (spawn ? 1 : 0.62);
+    const back = bubble.radius * (0.25 + t * 1.55);
+    const spread = bubble.radius * (0.32 + t * 0.58);
+    const x = clamp01(bubble.x - Math.cos(speedAngle) * back + Math.cos(arc) * spread);
+    const y = clamp01(bubble.y - Math.sin(speedAngle) * back + Math.sin(arc) * spread);
     const color = {
       r: headColor.r * (0.42 + fade * 0.48),
       g: headColor.g * (0.42 + fade * 0.48),
       b: headColor.b * (0.42 + fade * 0.48),
     };
-    const dx = Math.cos(speedAngle) * speed * config.SPLAT_FORCE * 0.008 + Math.cos(curl) * baseForce * (0.22 + t * 0.18);
-    const dy = Math.sin(speedAngle) * speed * config.SPLAT_FORCE * 0.008 + Math.sin(curl) * baseForce * (0.22 + t * 0.18);
+    const dx = Math.cos(speedAngle) * speed * config.SPLAT_FORCE * (spawn ? 0.012 : 0.004) + Math.cos(curl) * baseForce * (0.18 + t * 0.16);
+    const dy = Math.sin(speedAngle) * speed * config.SPLAT_FORCE * (spawn ? 0.012 : 0.004) + Math.sin(curl) * baseForce * (0.18 + t * 0.16);
     splat(x, y, dx, dy, color);
   }
   config.SPLAT_RADIUS = radiusBefore;
@@ -1501,8 +1515,8 @@ function updateAudioBubbles(dt, songEnergy) {
   for (const bubble of audioBubbles) {
     bubble.age += dt;
     bubble.emitTimer += dt;
-    bubble.vx *= 1 - dt * 0.16;
-    bubble.vy *= 1 - dt * 0.16;
+    bubble.vx *= 1 - dt * 0.045;
+    bubble.vy *= 1 - dt * 0.045;
     bubble.x += bubble.vx * speedScale * dt;
     bubble.y += bubble.vy * speedScale * dt;
 
@@ -1510,11 +1524,13 @@ function updateAudioBubbles(dt, songEnergy) {
     if (bubble.x < bubble.radius) {
       bubble.x = bubble.radius;
       bubble.vx = Math.abs(bubble.vx) * 0.72;
+      bubble.angle = Math.atan2(bubble.vy, bubble.vx);
       hit = true;
       emitCollisionSmoke(bubble.x, bubble.y, 1, 0, bubble.energy);
     } else if (bubble.x > 1 - bubble.radius) {
       bubble.x = 1 - bubble.radius;
       bubble.vx = -Math.abs(bubble.vx) * 0.72;
+      bubble.angle = Math.atan2(bubble.vy, bubble.vx);
       hit = true;
       emitCollisionSmoke(bubble.x, bubble.y, -1, 0, bubble.energy);
     }
@@ -1522,19 +1538,21 @@ function updateAudioBubbles(dt, songEnergy) {
     if (bubble.y < bubble.radius) {
       bubble.y = bubble.radius;
       bubble.vy = Math.abs(bubble.vy) * 0.72;
+      bubble.angle = Math.atan2(bubble.vy, bubble.vx);
       hit = true;
       emitCollisionSmoke(bubble.x, bubble.y, 0, 1, bubble.energy);
     } else if (bubble.y > 1 - bubble.radius) {
       bubble.y = 1 - bubble.radius;
       bubble.vy = -Math.abs(bubble.vy) * 0.72;
+      bubble.angle = Math.atan2(bubble.vy, bubble.vx);
       hit = true;
       emitCollisionSmoke(bubble.x, bubble.y, 0, -1, bubble.energy);
     }
 
     if (hit) bubble.age += 0.22;
-    if (bubble.emitTimer > 0.07 / Math.max(0.45, config.BUBBLE_TRAIL)) {
+    if (bubble.emitTimer > 0.18 / Math.max(0.16, config.BUBBLE_TRAIL)) {
       bubble.emitTimer = 0;
-      emitBubbleCrescent(bubble, hit);
+      emitBubbleCrescent(bubble, hit ? "hit" : "wake");
     }
   }
 
@@ -1561,6 +1579,8 @@ function updateAudioBubbles(dt, songEnergy) {
       a.vy += ny * impulse;
       b.vx -= nx * impulse;
       b.vy -= ny * impulse;
+      a.angle = Math.atan2(a.vy, a.vx);
+      b.angle = Math.atan2(b.vy, b.vx);
       a.age += 0.08;
       b.age += 0.08;
       emitCollisionSmoke((a.x + b.x) * 0.5, (a.y + b.y) * 0.5, nx, ny, Math.max(a.energy, b.energy));
