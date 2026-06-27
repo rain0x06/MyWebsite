@@ -120,6 +120,22 @@
     return `${minutes}:${String(remainder).padStart(2, "0")}`;
   }
 
+  function seekRatioFromControl() {
+    if (!spotifySeek) return 0;
+    return Math.min(1, Math.max(0, Number(spotifySeek.value) / 1000 || 0));
+  }
+
+  function paintSeekProgress(ratio) {
+    if (spotifySeek) spotifySeek.style.setProperty("--progress", `${Math.min(100, Math.max(0, ratio * 100))}%`);
+  }
+
+  function updateSeekPreview() {
+    const duration = audioEl && Number.isFinite(audioEl.duration) ? audioEl.duration : 0;
+    const ratio = seekRatioFromControl();
+    paintSeekProgress(duration > 0 ? ratio : 0);
+    if (spotifyCurrentTime) spotifyCurrentTime.textContent = formatTime(duration > 0 ? ratio * duration : 0);
+  }
+
   function updateTimeline() {
     if (!audioEl) return;
     const duration = Number.isFinite(audioEl.duration) ? audioEl.duration : 0;
@@ -128,8 +144,13 @@
     if (spotifyDuration) spotifyDuration.textContent = formatTime(duration);
     if (spotifySeek) {
       spotifySeek.disabled = duration <= 0;
-      if (!isSeeking) spotifySeek.value = duration > 0 ? String(Math.round((current / duration) * 1000)) : "0";
-      spotifySeek.style.setProperty("--progress", `${duration > 0 ? Math.min(100, Math.max(0, (current / duration) * 100)) : 0}%`);
+      if (isSeeking) {
+        updateSeekPreview();
+      } else {
+        const ratio = duration > 0 ? Math.min(1, Math.max(0, current / duration)) : 0;
+        spotifySeek.value = duration > 0 ? String(Math.round(ratio * 1000)) : "0";
+        paintSeekProgress(ratio);
+      }
     }
   }
 
@@ -152,7 +173,8 @@
       spotifyPlayerPlay.classList.toggle("is-playing", isPlaying);
       spotifyPlayerPlay.setAttribute("aria-label", isPlaying ? "Pause track" : "Play track");
       spotifyPlayerPlay.setAttribute("title", isPlaying ? "Pause" : "Play");
-      spotifyPlayerPlay.dataset.tooltip = isPlaying ? "Pause" : "Play";
+      const tooltip = spotifyPlayerPlay.querySelector(".control-tooltip");
+      if (tooltip) tooltip.textContent = isPlaying ? "Pause" : "Play";
     }
     document.body.classList.add("is-entered");
     document.body.classList.remove("is-locked");
@@ -172,7 +194,8 @@
       spotifyPlayerPlay.classList.remove("is-playing");
       spotifyPlayerPlay.setAttribute("aria-label", "Play track");
       spotifyPlayerPlay.setAttribute("title", "Play");
-      spotifyPlayerPlay.dataset.tooltip = "Play";
+      const tooltip = spotifyPlayerPlay.querySelector(".control-tooltip");
+      if (tooltip) tooltip.textContent = "Play";
     }
   }
 
@@ -317,6 +340,7 @@
     control.classList.remove("is-bumped");
     void control.offsetWidth;
     control.classList.add("is-bumped");
+    control.addEventListener("animationend", () => control.classList.remove("is-bumped"), { once: true });
   }
 
   function animatePlayerTransition(direction) {
@@ -340,6 +364,7 @@
     if (!sim || !runtime) return false;
     if (currentObjectUrl && currentObjectUrl !== objectUrl) URL.revokeObjectURL(currentObjectUrl);
     currentObjectUrl = objectUrl;
+    audioEl.loop = false;
     audioEl.dataset.trackName = trackName;
     audioEl.dataset.trackSrc = src;
     sim.setAudioSource(src, objectUrl);
@@ -352,6 +377,7 @@
     if (audioEl.dataset.trackSrc === src && audioEl.src) return true;
     if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
     currentObjectUrl = null;
+    audioEl.loop = false;
     audioEl.preload = "auto";
     audioEl.dataset.trackName = trackName;
     audioEl.dataset.trackSrc = src;
@@ -560,6 +586,7 @@
       return;
     }
 
+    audioEl.loop = false;
     audioEl.dataset.trackName = selectedPlaylistTrack ? selectedPlaylistTrack.title : "";
     setStatus(selectedPlaylistTrack ? selectedPlaylistTrack.title : "select a track");
     updateSpotifyPlayer(selectedPlaylistTrack);
@@ -585,6 +612,7 @@
     if (spotifyPlayerPlay) {
       spotifyPlayerPlay.addEventListener("click", (event) => {
         event.stopPropagation();
+        animateControl(spotifyPlayerPlay);
         toggle();
       });
     }
@@ -603,15 +631,11 @@
       spotifySeek.addEventListener("touchstart", beginSeek, { passive: true });
       spotifySeek.addEventListener("input", () => {
         beginSeek();
-        const seekRatio = Number(spotifySeek.value) / 1000;
-        spotifySeek.style.setProperty("--progress", `${Math.min(100, Math.max(0, seekRatio * 100))}%`);
-        if (!audioEl || !Number.isFinite(audioEl.duration) || audioEl.duration <= 0) return;
-        const nextTime = seekRatio * audioEl.duration;
-        if (spotifyCurrentTime) spotifyCurrentTime.textContent = formatTime(nextTime);
+        updateSeekPreview();
       });
       spotifySeek.addEventListener("change", () => {
         if (audioEl && Number.isFinite(audioEl.duration) && audioEl.duration > 0) {
-          audioEl.currentTime = (Number(spotifySeek.value) / 1000) * audioEl.duration;
+          audioEl.currentTime = seekRatioFromControl() * audioEl.duration;
         }
         endSeek();
       });

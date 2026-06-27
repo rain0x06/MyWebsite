@@ -14,12 +14,12 @@
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="stylesheet" href="styles.css?v=20260627-polish6">
+    <link rel="stylesheet" href="styles.css?v=20260627-ended8">
     <script src="js/dat.gui.min.js"></script>
   </head>
   <body class="is-locked">
     <canvas class="fluid-canvas" id="fluidCanvas" aria-hidden="true"></canvas>
-    <audio id="track" preload="none" loop></audio>
+    <audio id="track" preload="none"></audio>
 
     <button class="enter-gate" id="enterGate" type="button" aria-label="Click to enter">
       <span>click to enter</span>
@@ -45,14 +45,15 @@
               <h2 id="trackPickerTitle" class="spotify-player__title">Select a track</h2>
               <p class="spotify-player__artist" id="spotifyPlayerArtist">Spotify playlist</p>
             </div>
-            <button class="spotify-settings" id="spotifySettings" type="button" aria-label="Open settings" title="Open settings" data-tooltip="Settings">
+            <button class="spotify-settings" id="spotifySettings" type="button" aria-label="Open settings" title="Open settings">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path>
                 <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.3a2.1 2.1 0 0 1-4.2 0v-.05a1.8 1.8 0 0 0-1.1-1.66 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.05A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.04-.04a2.1 2.1 0 0 1 2.97-2.97l.04.04A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.66V2.1a2.1 2.1 0 0 1 4.2 0v.05A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.66 1.1h.05a2.1 2.1 0 0 1 0 4.2h-.05A1.8 1.8 0 0 0 19.4 15Z"></path>
               </svg>
+              <span class="control-tooltip">Settings</span>
             </button>
             <div class="spotify-player__controls" aria-label="Playlist controls">
-              <button class="spotify-icon spotify-icon--shuffle" id="spotifyShuffle" type="button" aria-label="Shuffle playlist" title="Shuffle" data-tooltip="Shuffle">
+              <button class="spotify-icon spotify-icon--shuffle" id="spotifyShuffle" type="button" aria-label="Shuffle playlist" title="Shuffle">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M16 3h5v5"></path>
                   <path d="M4 17h2.6c1.8 0 3.4-.9 4.4-2.4l5.1-7.2A5.3 5.3 0 0 1 20.4 5H21"></path>
@@ -60,11 +61,18 @@
                   <path d="M4 7h2.4c1.7 0 3.2.8 4.2 2.2"></path>
                   <path d="m15 17 1.1 1.6A5.3 5.3 0 0 0 20.4 21H21"></path>
                 </svg>
+                <span class="control-tooltip">Shuffle</span>
               </button>
-              <button class="spotify-icon spotify-icon--previous" id="spotifyPrevious" type="button" aria-label="Previous track" title="Previous track" data-tooltip="Previous"></button>
-              <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Play track" title="Play" data-tooltip="Play"></button>
-              <button class="spotify-icon spotify-icon--next" id="spotifyNext" type="button" aria-label="Next track" title="Next track" data-tooltip="Next"></button>
-              <span class="spotify-icon spotify-icon--device" aria-hidden="true"></span>
+              <button class="spotify-icon spotify-icon--previous" id="spotifyPrevious" type="button" aria-label="Previous track" title="Previous track">
+                <span class="control-tooltip">Previous</span>
+              </button>
+              <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Play track" title="Play">
+                <span class="spotify-play__icon" aria-hidden="true"><span></span><span></span></span>
+                <span class="control-tooltip">Play</span>
+              </button>
+              <button class="spotify-icon spotify-icon--next" id="spotifyNext" type="button" aria-label="Next track" title="Next track">
+                <span class="control-tooltip">Next</span>
+              </button>
             </div>
             <div class="spotify-player__timeline" aria-label="Track progress">
               <span class="spotify-player__time" id="spotifyCurrentTime">0:00</span>
@@ -110,7 +118,7 @@
     </dialog>
 
     <script src="js/fluid.js"></script>
-    <script src="js/audio.js?v=20260627-polish6"></script>
+    <script src="js/audio.js?v=20260627-ended8"></script>
     <script src="js/main.js?v=20260627-polish6"></script>
   </body>
 </html>
