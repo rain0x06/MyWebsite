@@ -14,7 +14,6 @@
   const trackListEl = document.getElementById("trackList");
   const spotifyEmbedEl = document.getElementById("spotifyEmbed");
   const spotifyPlayerCover = document.getElementById("spotifyPlayerCover");
-  const spotifyPlayerMeta = document.querySelector(".spotify-player__meta");
   const spotifyPlayerTitle = document.getElementById("trackPickerTitle");
   const spotifyPlayerArtist = document.getElementById("spotifyPlayerArtist");
   const spotifyOverlayToggle = document.getElementById("spotifyOverlayToggle");
@@ -27,6 +26,14 @@
   const spotifyDuration = document.getElementById("spotifyDuration");
   const spotifySeek = document.getElementById("spotifySeek");
   let controlsGui = null;
+
+  try {
+    localStorage.removeItem("rain0x.spotifyToken");
+    sessionStorage.removeItem("rain0x.spotifyVerifier");
+    sessionStorage.removeItem("rain0x.spotifyState");
+  } catch (error) {
+    document.documentElement.dataset.spotifyCleanup = "unavailable";
+  }
 
   window.startTabTitleEffect = function startTabTitleEffect() {
     if (window.startTabTitleEffect.started) return;
@@ -235,21 +242,6 @@
     const observer = new MutationObserver(syncSpotifyToggleState);
     observer.observe(trackPickerPanel, { attributes: true, attributeFilter: ["hidden"] });
     syncSpotifyToggleState();
-  }
-
-  if (window.SpotifyLive) {
-    window.SpotifyLive.init({
-      coverEl: spotifyPlayerCover,
-      metaEl: spotifyPlayerMeta,
-      titleEl: spotifyPlayerTitle,
-      artistEl: spotifyPlayerArtist,
-      playButton: spotifyPlayerPlay,
-      currentTimeEl: spotifyCurrentTime,
-      durationEl: spotifyDuration,
-      seekEl: spotifySeek,
-      embedEl: spotifyEmbedEl,
-      trackListEl,
-    });
   }
 
   function setupGui() {
