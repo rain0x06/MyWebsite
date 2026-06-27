@@ -20,9 +20,20 @@
     const sim = window.FluidSimulation;
     if (!sim || !audioEl) return false;
 
-    sim.initAudio(audioEl);
+    const runtime = sim.initAudio(audioEl);
+    if (!runtime) {
+      setPlayingUi(false);
+      setStatus("audio unsupported");
+      return false;
+    }
+
     try {
-      await sim.startAudio();
+      const started = await sim.startAudio();
+      if (!started) {
+        setPlayingUi(false);
+        setStatus("audio unsupported");
+        return false;
+      }
       setPlayingUi(true);
       setStatus(audioEl.dataset.trackName || "playing demo");
       return true;
@@ -70,8 +81,8 @@
     }
 
     audioEl.dataset.trackName = "Where U From demo";
-    window.FluidSimulation.initAudio(audioEl);
-    setStatus("demo loaded");
+    const runtime = window.FluidSimulation.initAudio(audioEl);
+    setStatus(runtime ? "demo loaded" : "audio unsupported");
 
     if (playButton) playButton.addEventListener("click", toggle);
     if (options.fileInput) {
