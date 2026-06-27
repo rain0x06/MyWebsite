@@ -33,7 +33,20 @@
         <span>MP3</span>
         <input id="trackPicker" type="file" accept="audio/mpeg,audio/mp3">
       </label>
-      <span class="audio-status" id="audioStatus">demo loaded</span>
+      <button class="audio-button" id="changeTrack" type="button">Change Track</button>
+      <span class="audio-status" id="audioStatus" aria-live="polite">demo loaded</span>
+    </section>
+
+    <section class="track-picker" id="trackPickerPanel" aria-label="Track playlist" hidden>
+      <div class="track-picker__scrim" data-close-track-picker></div>
+      <div class="track-picker__panel" role="dialog" aria-modal="true" aria-labelledby="trackPickerTitle">
+        <div class="track-picker__header">
+          <h2 id="trackPickerTitle">Change Track</h2>
+          <button class="track-picker__close" type="button" data-close-track-picker aria-label="Close track picker">Close</button>
+        </div>
+        <div class="spotify-embed" id="spotifyEmbed" aria-live="polite"></div>
+        <div class="track-list" id="trackList" role="listbox" aria-label="Spotify-style playlist"></div>
+      </div>
     </section>
 
     <header class="site-header" aria-label="Primary links">

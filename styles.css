@@ -171,13 +171,211 @@ body.is-entered .enter-gate {
 }
 
 .audio-status {
-  max-width: min(360px, 44vw);
+  position: absolute;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 0.78rem;
-  font-weight: 700;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.track-picker[hidden] {
+  display: none;
+}
+
+.track-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+}
+
+.track-picker__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.44);
+  backdrop-filter: blur(10px);
+}
+
+.track-picker__panel {
+  position: absolute;
+  left: 50%;
+  bottom: 92px;
+  width: min(880px, calc(100vw - 32px));
+  max-height: min(632px, calc(100vh - 132px));
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(18, 18, 18, 0.96);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
+}
+
+.track-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.track-picker__header h2 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.track-picker__close {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.track-list {
+  max-height: calc(min(632px, calc(100vh - 132px)) - 54px);
+  overflow: auto;
+  padding: 8px 0 12px;
+}
+
+.spotify-embed {
+  display: none;
+  padding: 12px 16px 4px;
+}
+
+.spotify-embed:has(iframe) {
+  display: block;
+}
+
+.spotify-embed iframe {
+  display: block;
+  border: 0;
+  border-radius: 12px;
+  background: #121212;
+}
+
+.spotify-embed:has(iframe) + .track-list {
+  max-height: calc(min(632px, calc(100vh - 132px)) - 222px);
+}
+
+.track-row {
+  display: grid;
+  grid-template-columns: 38px 40px minmax(280px, 1fr) minmax(160px, 265px);
+  width: 100%;
+  min-height: 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 16px;
+  border: 0;
+  color: rgba(255, 255, 255, 0.88);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.track-row:hover,
+.track-row:focus-visible,
+.track-row.is-selected {
+  background: rgba(255, 255, 255, 0.09);
+  outline: none;
+}
+
+.track-row.is-unavailable {
+  opacity: 0.5;
+}
+
+.track-row.is-unavailable:hover,
+.track-row.is-unavailable:focus-visible {
+  opacity: 0.78;
+}
+
+.track-number {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.track-cover {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.track-main {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.track-title,
+.track-album {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.track-title {
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.track-artist,
+.track-album {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.track-badge,
+.track-video {
+  display: inline-flex;
+  min-width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+  border-radius: 2px;
+  color: #121212;
+  background: rgba(255, 255, 255, 0.78);
+  font-size: 0.58rem;
+  font-weight: 900;
+  line-height: 1;
+  vertical-align: 1px;
+}
+
+.track-video {
+  width: 14px;
+  color: transparent;
+  position: relative;
+}
+
+.track-video::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 3px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid #121212;
+}
+
+.track-dot {
+  color: rgba(255, 255, 255, 0.38);
 }
 
 .site-header {
@@ -336,7 +534,22 @@ body.is-entered .site-header {
   }
 
   .audio-status {
-    max-width: 34vw;
+    width: 1px;
+  }
+
+  .track-picker__panel {
+    bottom: 86px;
+    width: calc(100vw - 20px);
+  }
+
+  .track-row {
+    grid-template-columns: 30px 40px minmax(0, 1fr);
+    gap: 10px;
+    padding: 7px 10px;
+  }
+
+  .track-album {
+    display: none;
   }
 
   .warning-actions {

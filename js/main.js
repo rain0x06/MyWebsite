@@ -9,6 +9,10 @@
   const playButton = document.getElementById("playToggle");
   const fileInput = document.getElementById("trackPicker");
   const statusEl = document.getElementById("audioStatus");
+  const changeTrackButton = document.getElementById("changeTrack");
+  const trackPickerPanel = document.getElementById("trackPickerPanel");
+  const trackListEl = document.getElementById("trackList");
+  const spotifyEmbedEl = document.getElementById("spotifyEmbed");
 
   window.startTabTitleEffect = function startTabTitleEffect() {
     if (window.startTabTitleEffect.started) return;
@@ -114,6 +118,10 @@
     playButton,
     fileInput,
     statusEl,
+    changeTrackButton,
+    trackPickerPanel,
+    trackListEl,
+    spotifyEmbedEl,
   });
 
   function setupGui() {
