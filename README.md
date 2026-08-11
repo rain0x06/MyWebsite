@@ -1,12 +1,12 @@
 # rain0x.me
 
-Static personal portfolio for `rain0x.me`, hosted through GitHub Pages.
+Static personal portfolio for `rain0x.me`, hosted through GitHub Pages. The design uses an original technical-workspace layout with compact project demos and a responsive section rail.
 
 ## Site structure
 
 - `index.html` — portfolio, about, project, and contact content.
-- `styles.css` — responsive dark-grid visual system and project card artwork.
-- `js/main.js` — mobile navigation, active-section state, reveal transitions, and Discord handle copy.
+- `styles.css` — responsive workspace visual system and project demo artwork.
+- `js/main.js` — mobile navigation, active-section state, project filtering, reveal transitions, and Discord handle copy.
 - `assets/rain-pfp.png` — avatar and favicon.
 - `assets/og.png` — generated social preview card matching the site design.
 - `CNAME` — GitHub Pages custom domain.

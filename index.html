@@ -3,246 +3,295 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0b0b0b">
+    <meta name="theme-color" content="#17181a">
     <meta name="description" content="rain0x — systems tooling, reverse engineering, low-level experiments, and software projects.">
     <meta property="og:title" content="rain0x — projects & research">
-    <meta property="og:description" content="Systems tooling, reverse engineering, low-level experiments, and software projects.">
+    <meta property="og:description" content="Software for the messy edge cases: native tooling, recovery, telemetry, automation, and reverse engineering.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rain0x.me">
     <meta property="og:image" content="https://rain0x.me/assets/og.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="rain0x — projects & research">
-    <meta name="twitter:description" content="Systems tooling, reverse engineering, low-level experiments, and software projects.">
+    <meta name="twitter:description" content="Software for the messy edge cases: native tooling, recovery, telemetry, automation, and reverse engineering.">
     <meta name="twitter:image" content="https://rain0x.me/assets/og.png">
-    <title>rain0x — Projects</title>
+    <title>rain0x — Projects & Research</title>
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="stylesheet" href="styles.css?v=20260811-portfolio1">
+    <link rel="stylesheet" href="styles.css?v=20260811-workspace2">
   </head>
   <body>
-    <header class="site-header">
-      <nav class="site-nav" aria-label="Primary navigation">
-        <div class="nav-shell">
-          <a class="brand" href="#home" aria-label="rain0x home">rain0x</a>
-          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span class="sr-only">Toggle navigation</span>
-          </button>
-          <div class="nav-links" id="navLinks">
-            <a class="active" href="#home">Home</a>
-            <a href="#projects">Projects</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-          </div>
-        </div>
-      </nav>
-    </header>
+    <div class="mobile-bar">
+      <a class="mobile-brand" href="#home">rain0x<span>.me</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="railNav">
+        <span></span><span></span><span></span>
+        <span class="sr-only">Toggle navigation</span>
+      </button>
+    </div>
 
-    <main>
-      <section class="hero" id="home" aria-labelledby="heroTitle">
-        <div class="hero-grid" aria-hidden="true"></div>
-        <div class="hero-gradient" aria-hidden="true"></div>
-
-        <div class="hero-brand reveal">
-          <p class="eyebrow">systems tooling / reverse engineering / low-level experiments</p>
-          <h1 id="heroTitle">rain0x</h1>
-          <p class="hero-copy">I build useful software around the parts of technology that usually stay hidden.</p>
-        </div>
-
-        <div class="hero-cards page-shell">
-          <a class="glass-card hero-card reveal delay-1" href="#projects">
-            <span class="card-index" aria-hidden="true">01</span>
-            <h2>Projects</h2>
-            <p>Flight tools, recovery software, automation, and reverse-engineering research.</p>
-            <strong>View featured work <span aria-hidden="true">→</span></strong>
-          </a>
-          <a class="glass-card hero-card reveal delay-2" href="#about">
-            <span class="card-index" aria-hidden="true">02</span>
-            <h2>Toolkit</h2>
-            <p>C, C++, C#, Python, JavaScript, native tooling, file formats, and game internals.</p>
-            <strong>See what I work with <span aria-hidden="true">→</span></strong>
-          </a>
-          <a class="glass-card hero-card reveal delay-3" href="#contact">
-            <span class="card-index" aria-hidden="true">03</span>
-            <h2>Get in touch</h2>
-            <p>Have a project, lead, broken format, or strange technical problem worth digging into?</p>
-            <strong>Contact me <span aria-hidden="true">→</span></strong>
-          </a>
-        </div>
-      </section>
-
-      <section class="content-section page-shell about-section" id="about" aria-labelledby="aboutTitle">
-        <div class="about-copy reveal">
-          <p class="section-kicker">About</p>
-          <h2 class="display-title" id="aboutTitle">I build, break,<br>and document things.</h2>
-          <div class="prose">
-            <p>Hi, I’m <strong>rain0x</strong>. I work around native tooling, file formats, game and platform internals, and automation.</p>
-            <p>I like taking opaque systems and turning them into software people can actually use—whether that means live flight telemetry, disk recovery, asset tooling, or a one-off parser for a format that was never documented.</p>
-            <p>Most of my work starts with a practical question and ends somewhere between a hex editor, a debugger, and a usable interface.</p>
-          </div>
-          <div class="social-row" aria-label="Social links">
-            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer" aria-label="GitHub profile">GH</a>
-            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer" aria-label="X profile">X</a>
-            <button type="button" data-copy-discord aria-label="Copy Discord username">DC</button>
-            <a href="mailto:rain@rain0x.me" aria-label="Email rain0x">@</a>
-          </div>
-        </div>
-
-        <div class="glass-card toolkit reveal delay-1">
-          <div class="toolkit-header">
-            <span>My toolkit</span>
-            <span class="status-dot"><i></i> active</span>
-          </div>
-          <div class="tool-group">
-            <h3>Languages</h3>
-            <div class="tag-list">
-              <span>C</span>
-              <span>C++</span>
-              <span>C#</span>
-              <span>Python</span>
-              <span>JavaScript</span>
-            </div>
-          </div>
-          <div class="tool-group">
-            <h3>Focus</h3>
-            <div class="tag-list">
-              <span>Reverse engineering</span>
-              <span>File formats</span>
-              <span>Game internals</span>
-              <span>Automation</span>
-              <span>Recovery</span>
-            </div>
-          </div>
-          <div class="tool-group">
-            <h3>Environment</h3>
-            <div class="tag-list">
-              <span>Windows</span>
-              <span>Linux</span>
-              <span>IDA</span>
-              <span>Git</span>
-              <span>WebGL</span>
-            </div>
-          </div>
-          <p class="toolkit-note">The real list changes with the problem. Small custom scripts usually do the most important work.</p>
-        </div>
-      </section>
-
-      <section class="content-section page-shell projects-section" id="projects" aria-labelledby="projectsTitle">
-        <div class="section-heading reveal">
+    <div class="site-frame">
+      <aside class="site-rail">
+        <div class="rail-brand">
+          <img src="assets/rain-pfp.png" alt="">
           <div>
-            <p class="section-kicker">Selected work</p>
-            <h2 id="projectsTitle">Featured projects</h2>
+            <strong>rain0x</strong>
+            <span>software / research</span>
           </div>
-          <div class="heading-line" aria-hidden="true"></div>
-          <a href="https://github.com/rain0x06?tab=repositories" target="_blank" rel="noreferrer">All repositories <span aria-hidden="true">→</span></a>
+          <i aria-label="Available for interesting work" title="Available"></i>
         </div>
 
-        <div class="project-grid">
-          <article class="glass-card project-card reveal">
-            <div class="project-visual flight-visual" aria-hidden="true">
-              <div class="visual-topline"><span>LIVE TELEMETRY</span><i></i></div>
-              <div class="flight-route"><strong>SZX</strong><span>→</span><strong>MEX</strong></div>
-              <div class="flight-meta"><span>35,000 FT</span><span>486 KT</span><span>A359</span></div>
-              <div class="route-line"><i></i><i></i></div>
-            </div>
-            <div class="project-body">
-              <div class="project-meta"><span>Web application</span><span>Active</span></div>
-              <h3>RedEye</h3>
-              <p>A browser-first flight utility with live aircraft telemetry, route lookup, real map position, speed, altitude, and arrival estimates.</p>
-              <div class="project-tags"><span>JavaScript</span><span>ADS-B</span><span>Maps</span></div>
-              <a class="project-link" href="https://redeye.rain0x.me" target="_blank" rel="noreferrer" aria-label="Open RedEye live site"></a>
-            </div>
-          </article>
+        <div class="rail-intro">
+          <p class="micro-label">Independent developer</p>
+          <h1>Software for the messy edge cases.</h1>
+          <p>I build practical tools around native systems, undocumented formats, live data, and everything that refuses to be simple.</p>
+        </div>
 
-          <article class="glass-card project-card reveal delay-1">
-            <div class="project-visual drive-visual" aria-hidden="true">
-              <div class="drive-window">
-                <div class="drive-title"><span></span><span></span><span></span><b>IMAGE_01.RAW</b></div>
-                <div class="drive-layout">
-                  <div class="drive-tree"><i></i><i></i><i></i><i></i><i></i></div>
-                  <div class="drive-content"><strong>Recovery scan</strong><span>FATX partition</span><div><i style="width: 78%"></i></div><small>12,486 files indexed</small></div>
+        <nav class="rail-nav" id="railNav" aria-label="Portfolio sections">
+          <p class="nav-label">Index</p>
+          <a class="active" href="#home"><span>00</span>Overview<i></i></a>
+          <a href="#projects"><span>01</span>Selected work<i></i></a>
+          <a href="#about"><span>02</span>About<i></i></a>
+          <a href="#stack"><span>03</span>Toolkit<i></i></a>
+          <a href="#contact"><span>04</span>Contact<i></i></a>
+        </nav>
+
+        <div class="rail-footer">
+          <div class="availability"><i></i><span>Open to unusual problems</span></div>
+          <div class="rail-links">
+            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer">X</a>
+            <a href="mailto:rain@rain0x.me">Email</a>
+          </div>
+          <span class="copyright">© <span id="year">2026</span> rain0x.me</span>
+        </div>
+      </aside>
+
+      <main class="portfolio-main">
+        <section class="overview-section page-section" id="home" aria-labelledby="overviewTitle">
+          <header class="section-header reveal">
+            <div class="section-number">00</div>
+            <div>
+              <p class="micro-label">Portfolio / 2026</p>
+              <h2 id="overviewTitle">I turn opaque systems into useful tools.</h2>
+              <p class="section-lede">From a live aircraft lookup to disk-image recovery and proprietary game formats, the through-line is the same: understand the system, then make it usable.</p>
+            </div>
+          </header>
+
+          <div class="overview-actions reveal delay-1">
+            <a class="button-primary" href="#projects">Explore the work <span>↘</span></a>
+            <a class="button-secondary" href="mailto:rain@rain0x.me">Start a conversation</a>
+          </div>
+
+          <div class="workbench reveal delay-2" aria-label="Current workbench">
+            <div class="workbench-bar">
+              <div><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+              <strong>workbench</strong>
+              <span>live snapshot</span>
+            </div>
+            <div class="workbench-body">
+              <div class="workbench-summary">
+                <span class="summary-label">Active threads</span>
+                <strong>04</strong>
+                <p>Tools and research moving from opaque data toward something people can use.</p>
+              </div>
+              <div class="task-list">
+                <div class="task-row">
+                  <span class="task-state running"></span>
+                  <div><strong>Live flight telemetry</strong><small>Routes, position, speed, ETA</small></div>
+                  <span class="task-badge purple">running</span>
+                </div>
+                <div class="task-row">
+                  <span class="task-state complete">✓</span>
+                  <div><strong>Storage recovery</strong><small>Read-only images and console media</small></div>
+                  <span class="task-badge green">shipped</span>
+                </div>
+                <div class="task-row">
+                  <span class="task-state research">⌁</span>
+                  <div><strong>Native asset decoding</strong><small>Archives, maps, materials, engine data</small></div>
+                  <span class="task-badge orange">research</span>
+                </div>
+                <div class="task-row">
+                  <span class="task-state complete">✓</span>
+                  <div><strong>Market scouting</strong><small>Listing signals and private automation</small></div>
+                  <span class="task-badge blue">public</span>
                 </div>
               </div>
             </div>
-            <div class="project-body">
-              <div class="project-meta"><span>Desktop + CLI</span><span>Open source</span></div>
-              <h3>Drive Assistant</h3>
-              <p>A read-only storage recovery and inspection tool for disk images and console media, built for real recovery workflows.</p>
-              <div class="project-tags"><span>C#</span><span>WPF</span><span>Avalonia</span></div>
-              <a class="project-link" href="https://github.com/rain0x06/DriveAssistant" target="_blank" rel="noreferrer" aria-label="Open Drive Assistant on GitHub"></a>
-            </div>
-          </article>
-
-          <article class="glass-card project-card reveal delay-2">
-            <div class="project-visual scout-visual" aria-hidden="true">
-              <div class="scout-search"><span>Search sold listings</span><b>SCOUT</b></div>
-              <div class="scout-list">
-                <div><i></i><span><b>Matched listing</b><small>Market data indexed</small></span><strong>$184</strong></div>
-                <div><i></i><span><b>Price signal</b><small>Comparable found</small></span><strong>+22%</strong></div>
-                <div><i></i><span><b>Watch result</b><small>Opportunity tracked</small></span><strong>LIVE</strong></div>
-              </div>
-            </div>
-            <div class="project-body">
-              <div class="project-meta"><span>Web application</span><span>Public site</span></div>
-              <h3>eBay Scout</h3>
-              <p>A focused public interface for a private listing scanner and market-analysis workflow.</p>
-              <div class="project-tags"><span>JavaScript</span><span>CSS</span><span>Automation</span></div>
-              <a class="project-link" href="https://rain0x06.github.io/EbayScout/" target="_blank" rel="noreferrer" aria-label="Open eBay Scout"></a>
-            </div>
-          </article>
-        </div>
-
-        <div class="research-strip reveal">
-          <div>
-            <span class="section-kicker">Ongoing research</span>
-            <h3>Native game asset tooling</h3>
           </div>
-          <p>Decoder and renderer work for proprietary game archives, assets, maps, materials, and engine data—built around native formats instead of screenshots or fallback approximations.</p>
-          <span class="research-label">private / experimental</span>
-        </div>
-      </section>
 
-      <section class="content-section page-shell contact-section" id="contact" aria-labelledby="contactTitle">
-        <div class="contact-copy reveal">
-          <p class="section-kicker">Contact</p>
-          <h2 class="display-title" id="contactTitle">Have something<br>worth digging into?</h2>
-          <p>Send a note if you have a project, technical question, undocumented format, data lead, or collaboration in mind.</p>
-          <a class="primary-button" href="mailto:rain@rain0x.me">Email me <span aria-hidden="true">→</span></a>
-        </div>
+          <div class="signal-strip reveal delay-3">
+            <div><span>Primary focus</span><strong>Reverse engineering</strong></div>
+            <div><span>Favorite output</span><strong>Useful software</strong></div>
+            <div><span>Current handle</span><strong>@rain0x06</strong></div>
+          </div>
+        </section>
 
-        <div class="glass-card contact-card reveal delay-1">
-          <div class="contact-person">
-            <img src="assets/rain-pfp.png" alt="rain0x profile image">
+        <section class="page-section projects-section" id="projects" aria-labelledby="projectsTitle">
+          <header class="section-header reveal">
+            <div class="section-number">01</div>
             <div>
-              <h3>rain0x</h3>
-              <p>Systems tooling & reverse engineering</p>
+              <p class="micro-label">Selected work</p>
+              <h2 id="projectsTitle">Projects built from real problems.</h2>
+              <p class="section-lede">A mix of public products, open-source tools, and ongoing technical research.</p>
+            </div>
+          </header>
+
+          <div class="project-filters reveal" role="group" aria-label="Filter projects">
+            <button class="active" type="button" data-filter="all" aria-pressed="true">All <span>4</span></button>
+            <button type="button" data-filter="web" aria-pressed="false">Web <span>2</span></button>
+            <button type="button" data-filter="native" aria-pressed="false">Native <span>1</span></button>
+            <button type="button" data-filter="research" aria-pressed="false">Research <span>1</span></button>
+          </div>
+
+          <div class="project-list">
+            <article class="project-entry project-entry-featured reveal" data-category="web">
+              <div class="project-copy">
+                <div class="project-heading">
+                  <span class="project-index">01 / web</span>
+                  <span class="task-badge purple">active</span>
+                </div>
+                <h3>RedEye</h3>
+                <p>A browser-first flight utility that turns live ADS-B data into a useful aircraft view—route, real position, altitude, speed, track, and an honest arrival estimate.</p>
+                <div class="project-tags"><span>JavaScript</span><span>Live data</span><span>Maps</span><span>Vercel</span></div>
+                <a href="https://redeye.rain0x.me" target="_blank" rel="noreferrer">Open live project <span>↗</span></a>
+              </div>
+              <div class="demo-frame flight-demo" aria-hidden="true">
+                <div class="demo-toolbar"><span>aircraft lookup</span><b>LIVE</b></div>
+                <div class="flight-query"><span>CSN8031</span><i>search</i></div>
+                <div class="flight-result">
+                  <div class="flight-callsign"><span>CSN8031</span><b>A359</b></div>
+                  <div class="flight-route"><strong>SZX</strong><i>→</i><strong>MEX</strong></div>
+                  <div class="flight-stats"><span><small>ALTITUDE</small>35,000 ft</span><span><small>SPEED</small>486 kt</span><span><small>STATUS</small>airborne</span></div>
+                  <div class="flight-track"><i></i><b></b><i></i></div>
+                </div>
+              </div>
+            </article>
+
+            <div class="project-pair">
+              <article class="project-entry reveal" data-category="native">
+                <div class="project-heading"><span class="project-index">02 / native</span><span class="task-badge green">open source</span></div>
+                <div class="mini-demo drive-demo" aria-hidden="true">
+                  <div class="drive-top"><span>IMAGE_01.RAW</span><i>read-only</i></div>
+                  <div class="drive-scan"><b>FATX</b><span><i></i></span><small>12,486 files indexed</small></div>
+                </div>
+                <h3>Drive Assistant</h3>
+                <p>Storage recovery and inspection for disk images and console media, with desktop and CLI workflows that keep source images untouched.</p>
+                <div class="project-tags"><span>C#</span><span>WPF</span><span>Avalonia</span></div>
+                <a href="https://github.com/rain0x06/DriveAssistant" target="_blank" rel="noreferrer">View repository <span>↗</span></a>
+              </article>
+
+              <article class="project-entry reveal delay-1" data-category="web">
+                <div class="project-heading"><span class="project-index">03 / web</span><span class="task-badge blue">public</span></div>
+                <div class="mini-demo scout-demo" aria-hidden="true">
+                  <div class="scout-top"><span>listing signals</span><b>3 MATCHES</b></div>
+                  <div class="scout-row"><i></i><span>Market match<small>comparable indexed</small></span><b>+22%</b></div>
+                  <div class="scout-row"><i></i><span>Watch result<small>opportunity tracked</small></span><b>LIVE</b></div>
+                </div>
+                <h3>eBay Scout</h3>
+                <p>A focused public interface for a private listing scanner and market-analysis workflow.</p>
+                <div class="project-tags"><span>JavaScript</span><span>Automation</span><span>CSS</span></div>
+                <a href="https://rain0x06.github.io/EbayScout/" target="_blank" rel="noreferrer">Open project <span>↗</span></a>
+              </article>
+            </div>
+
+            <article class="project-entry research-entry reveal" data-category="research">
+              <div>
+                <div class="project-heading"><span class="project-index">04 / research</span><span class="task-badge orange">in progress</span></div>
+                <h3>Native game asset tooling</h3>
+              </div>
+              <p>Decoder and renderer research for proprietary archives, maps, materials, models, and engine data—with unresolved formats kept explicit instead of hidden behind fallback approximations.</p>
+              <div class="research-steps" aria-label="Research workflow">
+                <span class="done">parse</span><i></i><span class="done">validate</span><i></i><span class="active">decode</span><i></i><span>render</span>
+              </div>
+            </article>
+          </div>
+
+          <a class="repository-link reveal" href="https://github.com/rain0x06?tab=repositories" target="_blank" rel="noreferrer">
+            <span>More work lives on GitHub</span><strong>Browse all repositories ↗</strong>
+          </a>
+        </section>
+
+        <section class="page-section about-section" id="about" aria-labelledby="aboutTitle">
+          <header class="section-header reveal">
+            <div class="section-number">02</div>
+            <div>
+              <p class="micro-label">About</p>
+              <h2 id="aboutTitle">Curiosity, with an exit condition.</h2>
+              <p class="section-lede">I enjoy the deep investigation, but the goal is always a clear result: a tool, a verified answer, a repeatable workflow, or a format somebody else can finally use.</p>
+            </div>
+          </header>
+
+          <div class="about-grid">
+            <div class="about-prose reveal">
+              <p>Hi, I’m <strong>rain0x</strong>. I build and break things around native tooling, file formats, game and platform internals, and automation.</p>
+              <p>Most projects begin with an inconvenient question: where does this data actually come from, what does the format really contain, or why does the visible result disagree with the parser?</p>
+              <p>I like following that question all the way down, then packaging the useful part back into software that is easier to understand than the system behind it.</p>
+            </div>
+
+            <div class="principle-list reveal delay-1">
+              <div><span>01</span><p><strong>Evidence over assumptions.</strong> A successful parse is not the same as a correct result.</p></div>
+              <div><span>02</span><p><strong>Useful beats impressive.</strong> The interface should make the difficult work disappear.</p></div>
+              <div><span>03</span><p><strong>Unknown stays unknown.</strong> Unresolved formats and limitations should stay visible.</p></div>
             </div>
           </div>
-          <div class="contact-list">
-            <a href="mailto:rain@rain0x.me"><span>Email</span><strong>rain@rain0x.me</strong><i aria-hidden="true">→</i></a>
-            <button type="button" data-copy-discord><span>Discord</span><strong>rain0x06</strong><i aria-hidden="true">copy</i></button>
-            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer"><span>X</span><strong>@rain0x06</strong><i aria-hidden="true">→</i></a>
-            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer"><span>GitHub</span><strong>rain0x06</strong><i aria-hidden="true">→</i></a>
-          </div>
-          <p class="contact-note">Discord username updated to <strong>rain0x06</strong>. Clicking it copies the handle.</p>
-        </div>
-      </section>
-    </main>
+        </section>
 
-    <footer class="site-footer">
-      <div class="page-shell footer-shell">
-        <span>© <span id="year">2026</span> rain0x.me</span>
-        <div>
-          <a href="mailto:rain@rain0x.me">Email</a>
-          <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer">X</a>
-          <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer">GitHub</a>
-        </div>
-      </div>
-    </footer>
+        <section class="page-section stack-section" id="stack" aria-labelledby="stackTitle">
+          <header class="section-header reveal">
+            <div class="section-number">03</div>
+            <div>
+              <p class="micro-label">Toolkit</p>
+              <h2 id="stackTitle">Tools chosen by the problem.</h2>
+              <p class="section-lede">The stack changes frequently. These are the pieces that recur.</p>
+            </div>
+          </header>
+
+          <div class="stack-table reveal">
+            <div class="stack-row"><span>Languages</span><div><b>C</b><b>C++</b><b>C#</b><b>Python</b><b>JavaScript</b></div><i>05</i></div>
+            <div class="stack-row"><span>Focus</span><div><b>Reverse engineering</b><b>File formats</b><b>Recovery</b><b>Automation</b></div><i>04</i></div>
+            <div class="stack-row"><span>Environment</span><div><b>Windows</b><b>Linux</b><b>Web</b><b>CLI</b></div><i>04</i></div>
+            <div class="stack-row"><span>Daily tools</span><div><b>IDA</b><b>VS Code</b><b>Git</b><b>Hex editors</b><b>Custom scripts</b></div><i>05</i></div>
+          </div>
+
+          <div class="code-note reveal">
+            <div class="code-note-bar"><span>working-principle.txt</span><i>plain text</i></div>
+            <pre><code><span>01</span> understand the real input
+<span>02</span> make failure observable
+<span>03</span> verify the visible output
+<span>04</span> automate the repeatable part</code></pre>
+          </div>
+        </section>
+
+        <section class="page-section contact-section" id="contact" aria-labelledby="contactTitle">
+          <header class="section-header reveal">
+            <div class="section-number">04</div>
+            <div>
+              <p class="micro-label">Contact</p>
+              <h2 id="contactTitle">Bring me the strange problem.</h2>
+              <p class="section-lede">Projects, technical questions, undocumented formats, data leads, or collaborations are all welcome.</p>
+            </div>
+          </header>
+
+          <div class="contact-composer reveal">
+            <div class="composer-copy">
+              <span>New conversation</span>
+              <p>Tell me what you are working on and where it gets difficult.</p>
+            </div>
+            <div class="composer-actions">
+              <a href="mailto:rain@rain0x.me"><span>Email</span><strong>rain@rain0x.me</strong><i>↗</i></a>
+              <button type="button" data-copy-discord><span>Discord</span><strong>rain0x06</strong><i>copy</i></button>
+            </div>
+            <div class="composer-footer">
+              <span>Also on</span>
+              <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer">GitHub ↗</a>
+              <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer">X / @rain0x06 ↗</a>
+              <i class="contact-status"><b></b> open</i>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
 
     <div class="copy-toast" id="copyToast" role="status" aria-live="polite">Discord copied: rain0x06</div>
-    <script src="js/main.js?v=20260811-portfolio1"></script>
+    <script src="js/main.js?v=20260811-workspace2"></script>
   </body>
 </html>

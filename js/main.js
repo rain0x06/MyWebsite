@@ -2,10 +2,12 @@
   "use strict";
 
   const navToggle = document.querySelector(".nav-toggle");
-  const navLinks = document.querySelector(".nav-links");
-  const navAnchors = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+  const railNav = document.querySelector(".rail-nav");
+  const navAnchors = [...document.querySelectorAll('.rail-nav a[href^="#"]')];
   const sections = [...document.querySelectorAll("main section[id]")];
   const revealItems = [...document.querySelectorAll(".reveal")];
+  const filterButtons = [...document.querySelectorAll("[data-filter]")];
+  const projectEntries = [...document.querySelectorAll("[data-category]")];
   const copyButtons = [...document.querySelectorAll("[data-copy-discord]")];
   const copyToast = document.getElementById("copyToast");
   const year = document.getElementById("year");
@@ -14,19 +16,18 @@
   if (year) year.textContent = String(new Date().getFullYear());
 
   function closeNavigation() {
-    if (!navToggle || !navLinks) return;
+    if (!navToggle || !railNav) return;
     navToggle.setAttribute("aria-expanded", "false");
-    navLinks.classList.remove("open");
+    railNav.classList.remove("open");
   }
 
   navToggle?.addEventListener("click", () => {
     const willOpen = navToggle.getAttribute("aria-expanded") !== "true";
     navToggle.setAttribute("aria-expanded", String(willOpen));
-    navLinks?.classList.toggle("open", willOpen);
+    railNav?.classList.toggle("open", willOpen);
   });
 
   navAnchors.forEach((anchor) => anchor.addEventListener("click", closeNavigation));
-
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeNavigation();
   });
@@ -39,9 +40,8 @@
         observer.unobserve(entry.target);
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.1 }
   );
-
   revealItems.forEach((item) => revealObserver.observe(item));
 
   const navObserver = new IntersectionObserver(
@@ -49,16 +49,28 @@
       const visible = entries
         .filter((entry) => entry.isIntersecting)
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
       if (!visible) return;
       navAnchors.forEach((anchor) => {
         anchor.classList.toggle("active", anchor.getAttribute("href") === `#${visible.target.id}`);
       });
     },
-    { rootMargin: "-25% 0px -58%", threshold: [0.05, 0.25, 0.55] }
+    { rootMargin: "-18% 0px -62%", threshold: [0.05, 0.25, 0.5] }
   );
-
   sections.forEach((section) => navObserver.observe(section));
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const filter = button.dataset.filter;
+      filterButtons.forEach((candidate) => {
+        const isActive = candidate === button;
+        candidate.classList.toggle("active", isActive);
+        candidate.setAttribute("aria-pressed", String(isActive));
+      });
+      projectEntries.forEach((entry) => {
+        entry.classList.toggle("is-hidden", filter !== "all" && entry.dataset.category !== filter);
+      });
+    });
+  });
 
   function showToast(message) {
     if (!copyToast) return;
@@ -72,23 +84,17 @@
     const handle = "rain0x06";
     try {
       await navigator.clipboard.writeText(handle);
-      showToast(`Discord copied: ${handle}`);
     } catch {
-      const selection = window.getSelection();
-      const range = document.createRange();
-      const fallback = document.createElement("span");
-      fallback.textContent = handle;
-      fallback.style.position = "fixed";
-      fallback.style.opacity = "0";
-      document.body.append(fallback);
-      range.selectNodeContents(fallback);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
+      const helper = document.createElement("textarea");
+      helper.value = handle;
+      helper.style.position = "fixed";
+      helper.style.opacity = "0";
+      document.body.append(helper);
+      helper.select();
       document.execCommand("copy");
-      selection?.removeAllRanges();
-      fallback.remove();
-      showToast(`Discord copied: ${handle}`);
+      helper.remove();
     }
+    showToast(`Discord copied: ${handle}`);
   }
 
   copyButtons.forEach((button) => button.addEventListener("click", copyDiscord));
