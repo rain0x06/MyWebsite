@@ -3,119 +3,246 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#050608">
-    <meta name="description" content="rain0x - personal site, socials, and contact.">
-    <meta property="og:title" content="rain0x">
-    <meta property="og:description" content="rain0x.me">
+    <meta name="theme-color" content="#0b0b0b">
+    <meta name="description" content="rain0x — systems tooling, reverse engineering, low-level experiments, and software projects.">
+    <meta property="og:title" content="rain0x — projects & research">
+    <meta property="og:description" content="Systems tooling, reverse engineering, low-level experiments, and software projects.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rain0x.me">
-    <meta property="og:image" content="https://rain0x.me/assets/rain-pfp.png">
-    <title>rain0x</title>
+    <meta property="og:image" content="https://rain0x.me/assets/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="rain0x — projects & research">
+    <meta name="twitter:description" content="Systems tooling, reverse engineering, low-level experiments, and software projects.">
+    <meta name="twitter:image" content="https://rain0x.me/assets/og.png">
+    <title>rain0x — Projects</title>
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
-    <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="stylesheet" href="styles.css?v=20260627-local16">
-    <script src="js/dat.gui.min.js"></script>
+    <link rel="stylesheet" href="styles.css?v=20260811-portfolio1">
   </head>
-  <body class="is-locked">
-    <canvas class="fluid-canvas" id="fluidCanvas" aria-hidden="true"></canvas>
-    <audio id="track" preload="none"></audio>
-
-    <button class="enter-gate" id="enterGate" type="button" aria-label="Click to enter">
-      <span>click to enter</span>
-    </button>
-
-    <input id="trackPicker" class="hidden-file-input" type="file" accept="audio/mpeg,audio/mp3" aria-hidden="true" tabindex="-1">
-    <span class="audio-status" id="audioStatus" aria-live="polite">demo loaded</span>
-
-    <section class="track-picker" id="trackPickerPanel" aria-label="Track playlist" hidden>
-      <div class="track-picker__scrim" data-close-track-picker></div>
-      <div class="track-picker__panel" role="dialog" aria-modal="true" aria-labelledby="trackPickerTitle">
-        <div class="track-picker__header">
-          <div class="spotify-player" id="spotifyPlayer" aria-labelledby="trackPickerTitle">
-            <img class="spotify-player__cover" id="spotifyPlayerCover" src="assets/rain-pfp.png" alt="">
-            <div class="spotify-player__meta">
-              <h2 id="trackPickerTitle" class="spotify-player__title">Select a track</h2>
-              <p class="spotify-player__artist" id="spotifyPlayerArtist">Spotify playlist</p>
-            </div>
-            <button class="spotify-settings" id="spotifySettings" type="button" aria-label="Open settings" title="Open settings">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path>
-                <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.3a2.1 2.1 0 0 1-4.2 0v-.05a1.8 1.8 0 0 0-1.1-1.66 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.05A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.04-.04a2.1 2.1 0 0 1 2.97-2.97l.04.04A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.66V2.1a2.1 2.1 0 0 1 4.2 0v.05A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.66 1.1h.05a2.1 2.1 0 0 1 0 4.2h-.05A1.8 1.8 0 0 0 19.4 15Z"></path>
-              </svg>
-              <span class="control-tooltip">Settings</span>
-            </button>
-            <div class="spotify-player__controls" aria-label="Playlist controls">
-              <button class="spotify-icon spotify-icon--shuffle" id="spotifyShuffle" type="button" aria-label="Shuffle playlist" title="Shuffle">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M16 3h5v5"></path>
-                  <path d="M4 17h2.6c1.8 0 3.4-.9 4.4-2.4l5.1-7.2A5.3 5.3 0 0 1 20.4 5H21"></path>
-                  <path d="M16 21h5v-5"></path>
-                  <path d="M4 7h2.4c1.7 0 3.2.8 4.2 2.2"></path>
-                  <path d="m15 17 1.1 1.6A5.3 5.3 0 0 0 20.4 21H21"></path>
-                </svg>
-                <span class="control-tooltip">Shuffle</span>
-              </button>
-              <button class="spotify-icon spotify-icon--previous" id="spotifyPrevious" type="button" aria-label="Previous track" title="Previous track">
-                <span class="control-tooltip">Previous</span>
-              </button>
-              <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Play track" title="Play">
-                <span class="spotify-play__icon" aria-hidden="true"><span></span><span></span></span>
-                <span class="control-tooltip">Play</span>
-              </button>
-              <button class="spotify-icon spotify-icon--next" id="spotifyNext" type="button" aria-label="Next track" title="Next track">
-                <span class="control-tooltip">Next</span>
-              </button>
-            </div>
-            <div class="spotify-player__timeline" aria-label="Track progress">
-              <span class="spotify-player__time" id="spotifyCurrentTime">0:00</span>
-              <input class="spotify-player__seek" id="spotifySeek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek track">
-              <span class="spotify-player__time" id="spotifyDuration">0:00</span>
-            </div>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Primary navigation">
+        <div class="nav-shell">
+          <a class="brand" href="#home" aria-label="rain0x home">rain0x</a>
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span class="sr-only">Toggle navigation</span>
+          </button>
+          <div class="nav-links" id="navLinks">
+            <a class="active" href="#home">Home</a>
+            <a href="#projects">Projects</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
           </div>
         </div>
-        <div class="spotify-embed" id="spotifyEmbed" aria-live="polite"></div>
-        <div class="track-list" id="trackList" role="listbox" aria-label="Spotify-style playlist"></div>
-      </div>
-    </section>
-
-    <header class="site-header" aria-label="Primary links">
-      <button class="icon-link spotify-toggle" id="spotifyOverlayToggle" type="button" aria-label="Toggle Spotify overlay" title="Spotify">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.58 14.42a.62.62 0 0 1-.85.2c-2.34-1.43-5.28-1.75-8.75-.96a.63.63 0 0 1-.28-1.22c3.8-.87 7.06-.5 9.68 1.1.3.18.39.57.2.88Zm1.22-2.7a.78.78 0 0 1-1.07.26c-2.68-1.65-6.77-2.12-9.94-1.16a.78.78 0 1 1-.45-1.5c3.63-1.1 8.13-.57 11.2 1.3.37.23.48.72.26 1.1Zm.1-2.8C14.7 9 9.38 8.83 6.32 9.77a.94.94 0 1 1-.55-1.8c3.52-1.07 9.4-.87 13.1 1.32a.94.94 0 0 1-.96 1.62Z"></path>
-        </svg>
-      </button>
-      <a class="icon-link" id="discordLink" href="https://discord.com/users/1119270545633058837" target="_blank" rel="noreferrer" aria-label="Add rain0x on Discord" title="Discord">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20.32 4.37A19.8 19.8 0 0 0 15.89 3l-.21.42c-.1.2-.2.4-.28.61a18.5 18.5 0 0 0-5.8 0 9.8 9.8 0 0 0-.5-1.03 19.7 19.7 0 0 0-4.43 1.37C1.88 8.28 1.18 12.2 1.55 16.07a19.9 19.9 0 0 0 5.43 2.73c.44-.6.83-1.24 1.17-1.9-.64-.24-1.26-.54-1.84-.9l.45-.35c3.55 1.66 7.4 1.66 10.9 0l.45.35c-.59.36-1.2.66-1.85.9.34.66.74 1.3 1.18 1.9a19.8 19.8 0 0 0 5.43-2.73c.45-4.48-.76-8.34-2.55-11.7ZM8.02 13.67c-1.06 0-1.93-.98-1.93-2.18 0-1.2.85-2.18 1.93-2.18s1.95.99 1.93 2.18c0 1.2-.86 2.18-1.93 2.18Zm7.96 0c-1.07 0-1.93-.98-1.93-2.18 0-1.2.85-2.18 1.93-2.18s1.95.99 1.93 2.18c0 1.2-.86 2.18-1.93 2.18Z"></path>
-        </svg>
-      </a>
-      <a class="icon-link" href="https://x.com/rain0x06" target="_blank" rel="noreferrer" aria-label="Open rain0x06 on X" title="X">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.65h2.04L6.49 3h-2.2l13.32 17.8Z"></path>
-        </svg>
-      </a>
-      <a class="icon-link" href="mailto:rain@rain0x.me" aria-label="Email rain@rain0x.me. Replies may come from my Gmail address." title="Email">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4.75 5h14.5A2.75 2.75 0 0 1 22 7.75v8.5A2.75 2.75 0 0 1 19.25 19H4.75A2.75 2.75 0 0 1 2 16.25v-8.5A2.75 2.75 0 0 1 4.75 5Zm0 2a.75.75 0 0 0-.75.75v.39l8 4.8 8-4.8v-.39a.75.75 0 0 0-.75-.75H4.75Zm15.25 3.47-7.49 4.49a1 1 0 0 1-1.02 0L4 10.47v5.78c0 .41.34.75.75.75h14.5c.41 0 .75-.34.75-.75v-5.78Z"></path>
-        </svg>
-      </a>
+      </nav>
     </header>
 
-    <dialog class="contact-warning" id="discordWarning" aria-labelledby="discordWarningTitle">
-      <form method="dialog">
-        <h2 id="discordWarningTitle">Discord</h2>
-        <p>I do not accept random friend requests. If you'd like to contact me, email rain@rain0x.me. Replies may come from my Gmail address.</p>
-        <div class="warning-actions">
-          <a class="warning-button primary" href="mailto:rain@rain0x.me">Email me</a>
-          <button class="warning-button" id="continueDiscord" type="button">Open Discord</button>
-          <button class="warning-button ghost" type="submit">Close</button>
-        </div>
-      </form>
-    </dialog>
+    <main>
+      <section class="hero" id="home" aria-labelledby="heroTitle">
+        <div class="hero-grid" aria-hidden="true"></div>
+        <div class="hero-gradient" aria-hidden="true"></div>
 
-    <script src="js/fluid.js?v=20260627-spotify11"></script>
-    <script src="js/audio.js?v=20260627-spotify11"></script>
-    <script src="js/main.js?v=20260627-local16"></script>
+        <div class="hero-brand reveal">
+          <p class="eyebrow">systems tooling / reverse engineering / low-level experiments</p>
+          <h1 id="heroTitle">rain0x</h1>
+          <p class="hero-copy">I build useful software around the parts of technology that usually stay hidden.</p>
+        </div>
+
+        <div class="hero-cards page-shell">
+          <a class="glass-card hero-card reveal delay-1" href="#projects">
+            <span class="card-index" aria-hidden="true">01</span>
+            <h2>Projects</h2>
+            <p>Flight tools, recovery software, automation, and reverse-engineering research.</p>
+            <strong>View featured work <span aria-hidden="true">→</span></strong>
+          </a>
+          <a class="glass-card hero-card reveal delay-2" href="#about">
+            <span class="card-index" aria-hidden="true">02</span>
+            <h2>Toolkit</h2>
+            <p>C, C++, C#, Python, JavaScript, native tooling, file formats, and game internals.</p>
+            <strong>See what I work with <span aria-hidden="true">→</span></strong>
+          </a>
+          <a class="glass-card hero-card reveal delay-3" href="#contact">
+            <span class="card-index" aria-hidden="true">03</span>
+            <h2>Get in touch</h2>
+            <p>Have a project, lead, broken format, or strange technical problem worth digging into?</p>
+            <strong>Contact me <span aria-hidden="true">→</span></strong>
+          </a>
+        </div>
+      </section>
+
+      <section class="content-section page-shell about-section" id="about" aria-labelledby="aboutTitle">
+        <div class="about-copy reveal">
+          <p class="section-kicker">About</p>
+          <h2 class="display-title" id="aboutTitle">I build, break,<br>and document things.</h2>
+          <div class="prose">
+            <p>Hi, I’m <strong>rain0x</strong>. I work around native tooling, file formats, game and platform internals, and automation.</p>
+            <p>I like taking opaque systems and turning them into software people can actually use—whether that means live flight telemetry, disk recovery, asset tooling, or a one-off parser for a format that was never documented.</p>
+            <p>Most of my work starts with a practical question and ends somewhere between a hex editor, a debugger, and a usable interface.</p>
+          </div>
+          <div class="social-row" aria-label="Social links">
+            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer" aria-label="GitHub profile">GH</a>
+            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer" aria-label="X profile">X</a>
+            <button type="button" data-copy-discord aria-label="Copy Discord username">DC</button>
+            <a href="mailto:rain@rain0x.me" aria-label="Email rain0x">@</a>
+          </div>
+        </div>
+
+        <div class="glass-card toolkit reveal delay-1">
+          <div class="toolkit-header">
+            <span>My toolkit</span>
+            <span class="status-dot"><i></i> active</span>
+          </div>
+          <div class="tool-group">
+            <h3>Languages</h3>
+            <div class="tag-list">
+              <span>C</span>
+              <span>C++</span>
+              <span>C#</span>
+              <span>Python</span>
+              <span>JavaScript</span>
+            </div>
+          </div>
+          <div class="tool-group">
+            <h3>Focus</h3>
+            <div class="tag-list">
+              <span>Reverse engineering</span>
+              <span>File formats</span>
+              <span>Game internals</span>
+              <span>Automation</span>
+              <span>Recovery</span>
+            </div>
+          </div>
+          <div class="tool-group">
+            <h3>Environment</h3>
+            <div class="tag-list">
+              <span>Windows</span>
+              <span>Linux</span>
+              <span>IDA</span>
+              <span>Git</span>
+              <span>WebGL</span>
+            </div>
+          </div>
+          <p class="toolkit-note">The real list changes with the problem. Small custom scripts usually do the most important work.</p>
+        </div>
+      </section>
+
+      <section class="content-section page-shell projects-section" id="projects" aria-labelledby="projectsTitle">
+        <div class="section-heading reveal">
+          <div>
+            <p class="section-kicker">Selected work</p>
+            <h2 id="projectsTitle">Featured projects</h2>
+          </div>
+          <div class="heading-line" aria-hidden="true"></div>
+          <a href="https://github.com/rain0x06?tab=repositories" target="_blank" rel="noreferrer">All repositories <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="project-grid">
+          <article class="glass-card project-card reveal">
+            <div class="project-visual flight-visual" aria-hidden="true">
+              <div class="visual-topline"><span>LIVE TELEMETRY</span><i></i></div>
+              <div class="flight-route"><strong>SZX</strong><span>→</span><strong>MEX</strong></div>
+              <div class="flight-meta"><span>35,000 FT</span><span>486 KT</span><span>A359</span></div>
+              <div class="route-line"><i></i><i></i></div>
+            </div>
+            <div class="project-body">
+              <div class="project-meta"><span>Web application</span><span>Active</span></div>
+              <h3>RedEye</h3>
+              <p>A browser-first flight utility with live aircraft telemetry, route lookup, real map position, speed, altitude, and arrival estimates.</p>
+              <div class="project-tags"><span>JavaScript</span><span>ADS-B</span><span>Maps</span></div>
+              <a class="project-link" href="https://redeye.rain0x.me" target="_blank" rel="noreferrer" aria-label="Open RedEye live site"></a>
+            </div>
+          </article>
+
+          <article class="glass-card project-card reveal delay-1">
+            <div class="project-visual drive-visual" aria-hidden="true">
+              <div class="drive-window">
+                <div class="drive-title"><span></span><span></span><span></span><b>IMAGE_01.RAW</b></div>
+                <div class="drive-layout">
+                  <div class="drive-tree"><i></i><i></i><i></i><i></i><i></i></div>
+                  <div class="drive-content"><strong>Recovery scan</strong><span>FATX partition</span><div><i style="width: 78%"></i></div><small>12,486 files indexed</small></div>
+                </div>
+              </div>
+            </div>
+            <div class="project-body">
+              <div class="project-meta"><span>Desktop + CLI</span><span>Open source</span></div>
+              <h3>Drive Assistant</h3>
+              <p>A read-only storage recovery and inspection tool for disk images and console media, built for real recovery workflows.</p>
+              <div class="project-tags"><span>C#</span><span>WPF</span><span>Avalonia</span></div>
+              <a class="project-link" href="https://github.com/rain0x06/DriveAssistant" target="_blank" rel="noreferrer" aria-label="Open Drive Assistant on GitHub"></a>
+            </div>
+          </article>
+
+          <article class="glass-card project-card reveal delay-2">
+            <div class="project-visual scout-visual" aria-hidden="true">
+              <div class="scout-search"><span>Search sold listings</span><b>SCOUT</b></div>
+              <div class="scout-list">
+                <div><i></i><span><b>Matched listing</b><small>Market data indexed</small></span><strong>$184</strong></div>
+                <div><i></i><span><b>Price signal</b><small>Comparable found</small></span><strong>+22%</strong></div>
+                <div><i></i><span><b>Watch result</b><small>Opportunity tracked</small></span><strong>LIVE</strong></div>
+              </div>
+            </div>
+            <div class="project-body">
+              <div class="project-meta"><span>Web application</span><span>Public site</span></div>
+              <h3>eBay Scout</h3>
+              <p>A focused public interface for a private listing scanner and market-analysis workflow.</p>
+              <div class="project-tags"><span>JavaScript</span><span>CSS</span><span>Automation</span></div>
+              <a class="project-link" href="https://rain0x06.github.io/EbayScout/" target="_blank" rel="noreferrer" aria-label="Open eBay Scout"></a>
+            </div>
+          </article>
+        </div>
+
+        <div class="research-strip reveal">
+          <div>
+            <span class="section-kicker">Ongoing research</span>
+            <h3>Native game asset tooling</h3>
+          </div>
+          <p>Decoder and renderer work for proprietary game archives, assets, maps, materials, and engine data—built around native formats instead of screenshots or fallback approximations.</p>
+          <span class="research-label">private / experimental</span>
+        </div>
+      </section>
+
+      <section class="content-section page-shell contact-section" id="contact" aria-labelledby="contactTitle">
+        <div class="contact-copy reveal">
+          <p class="section-kicker">Contact</p>
+          <h2 class="display-title" id="contactTitle">Have something<br>worth digging into?</h2>
+          <p>Send a note if you have a project, technical question, undocumented format, data lead, or collaboration in mind.</p>
+          <a class="primary-button" href="mailto:rain@rain0x.me">Email me <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="glass-card contact-card reveal delay-1">
+          <div class="contact-person">
+            <img src="assets/rain-pfp.png" alt="rain0x profile image">
+            <div>
+              <h3>rain0x</h3>
+              <p>Systems tooling & reverse engineering</p>
+            </div>
+          </div>
+          <div class="contact-list">
+            <a href="mailto:rain@rain0x.me"><span>Email</span><strong>rain@rain0x.me</strong><i aria-hidden="true">→</i></a>
+            <button type="button" data-copy-discord><span>Discord</span><strong>rain0x06</strong><i aria-hidden="true">copy</i></button>
+            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer"><span>X</span><strong>@rain0x06</strong><i aria-hidden="true">→</i></a>
+            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer"><span>GitHub</span><strong>rain0x06</strong><i aria-hidden="true">→</i></a>
+          </div>
+          <p class="contact-note">Discord username updated to <strong>rain0x06</strong>. Clicking it copies the handle.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-shell footer-shell">
+        <span>© <span id="year">2026</span> rain0x.me</span>
+        <div>
+          <a href="mailto:rain@rain0x.me">Email</a>
+          <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer">X</a>
+          <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="copy-toast" id="copyToast" role="status" aria-live="polite">Discord copied: rain0x06</div>
+    <script src="js/main.js?v=20260811-portfolio1"></script>
   </body>
 </html>
