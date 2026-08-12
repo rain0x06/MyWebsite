@@ -8,12 +8,6 @@
   const revealItems = [...document.querySelectorAll(".reveal")];
   const filterButtons = [...document.querySelectorAll("[data-filter]")];
   const projectEntries = [...document.querySelectorAll("[data-category]")];
-  const copyButtons = [...document.querySelectorAll("[data-copy-discord]")];
-  const copyToast = document.getElementById("copyToast");
-  const year = document.getElementById("year");
-  let toastTimer = 0;
-
-  if (year) year.textContent = String(new Date().getFullYear());
 
   function closeNavigation() {
     if (!navToggle || !railNav) return;
@@ -72,30 +66,4 @@
     });
   });
 
-  function showToast(message) {
-    if (!copyToast) return;
-    copyToast.textContent = message;
-    copyToast.classList.add("visible");
-    window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(() => copyToast.classList.remove("visible"), 2200);
-  }
-
-  async function copyDiscord() {
-    const handle = "rain0x06";
-    try {
-      await navigator.clipboard.writeText(handle);
-    } catch {
-      const helper = document.createElement("textarea");
-      helper.value = handle;
-      helper.style.position = "fixed";
-      helper.style.opacity = "0";
-      document.body.append(helper);
-      helper.select();
-      document.execCommand("copy");
-      helper.remove();
-    }
-    showToast(`Discord copied: ${handle}`);
-  }
-
-  copyButtons.forEach((button) => button.addEventListener("click", copyDiscord));
 })();

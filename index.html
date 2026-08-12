@@ -4,294 +4,196 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#17181a">
-    <meta name="description" content="Projects by rain0x — apps, tools, experiments, and useful things built for real problems.">
-    <meta property="og:title" content="rain0x — projects & research">
+    <meta name="description" content="Websites, apps, tools, and experiments by rain0x.">
+    <meta property="og:title" content="rain0x — projects">
     <meta property="og:description" content="Apps, tools, experiments, and other projects by rain0x.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rain0x.me">
     <meta property="og:image" content="https://rain0x.me/assets/og.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="rain0x — projects & research">
+    <meta name="twitter:title" content="rain0x — projects">
     <meta name="twitter:description" content="Apps, tools, experiments, and other projects by rain0x.">
     <meta name="twitter:image" content="https://rain0x.me/assets/og.png">
-    <title>rain0x — Projects & Research</title>
+    <title>rain0x — Projects</title>
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js" } }
+    </script>
     <link rel="stylesheet" href="styles.css?v=20260811-workspace2">
   </head>
   <body>
-    <div class="mobile-bar">
-      <a class="mobile-brand" href="#home">rain0x<span>.me</span></a>
+    <header class="mobile-bar">
+      <a class="mobile-brand" href="#about">rain0x<span>.me</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="railNav">
         <span></span><span></span><span></span>
         <span class="sr-only">Toggle navigation</span>
       </button>
-    </div>
+      <nav class="rail-nav" id="railNav" aria-label="Portfolio sections">
+        <a class="active" href="#about">About<i></i></a>
+        <a href="#projects">Projects<i></i></a>
+        <a href="#contact">Contact<i></i></a>
+      </nav>
+    </header>
 
     <div class="site-frame">
-      <aside class="site-rail">
-        <div class="rail-brand">
-          <img src="assets/rain-pfp.png" alt="">
-          <div>
-            <strong>rain0x</strong>
-            <span>projects / experiments</span>
-          </div>
-          <i aria-label="Available for interesting work" title="Available"></i>
-        </div>
-
-        <div class="rail-intro">
-          <p class="micro-label">Hey, I’m rain0x</p>
-          <h1>I build useful things and share what I learn.</h1>
-          <p>This is where I keep the apps, tools, and experiments I’m working on. Some are finished, and some are still taking shape.</p>
-        </div>
-
-        <nav class="rail-nav" id="railNav" aria-label="Portfolio sections">
-          <p class="nav-label">Index</p>
-          <a class="active" href="#home"><span>00</span>Overview<i></i></a>
-          <a href="#projects"><span>01</span>Selected work<i></i></a>
-          <a href="#about"><span>02</span>About<i></i></a>
-          <a href="#stack"><span>03</span>Tools<i></i></a>
-          <a href="#contact"><span>04</span>Contact<i></i></a>
-        </nav>
-
-        <div class="rail-footer">
-          <div class="availability"><i></i><span>Always interested in a good idea</span></div>
-          <div class="rail-links">
-            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer">GitHub</a>
-            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer">X</a>
-            <a href="mailto:rain@rain0x.me">Email</a>
-          </div>
-          <span class="copyright">© <span id="year">2026</span> rain0x.me</span>
-        </div>
-      </aside>
-
       <main class="portfolio-main">
-        <section class="overview-section page-section" id="home" aria-labelledby="overviewTitle">
-          <header class="section-header reveal">
-            <div class="section-number">00</div>
+        <section class="page-section about-section profile-section" id="about" aria-labelledby="aboutTitle">
+          <header class="section-header simple-header reveal">
             <div>
-              <p class="micro-label">Portfolio / 2026</p>
-              <h2 id="overviewTitle">I like turning good ideas into things people can actually use.</h2>
-              <p class="section-lede">I build websites, apps, and tools—usually because I ran into a problem and wanted a better way to solve it.</p>
+              <h2 id="aboutTitle">About.</h2>
             </div>
           </header>
 
-          <div class="overview-actions reveal delay-1">
-            <a class="button-primary" href="#projects">See my projects <span>↘</span></a>
-            <a class="button-secondary" href="mailto:rain@rain0x.me">Say hello</a>
-          </div>
-
-          <div class="workbench reveal delay-2" aria-label="Current workbench">
-            <div class="workbench-bar">
-              <div><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
-              <strong>what I’m working on</strong>
-              <span>right now</span>
-            </div>
-            <div class="workbench-body">
-              <div class="workbench-summary">
-                <span class="summary-label">Active projects</span>
-                <strong>04</strong>
-                <p>A few things I’ve been building, fixing, or learning about lately.</p>
-              </div>
-              <div class="task-list">
-                <div class="task-row">
-                  <span class="task-state running"></span>
-                  <div><strong>Live flight tracker</strong><small>See where a flight is and when it’ll arrive</small></div>
-                  <span class="task-badge purple">building</span>
-                </div>
-                <div class="task-row">
-                  <span class="task-state complete">✓</span>
-                  <div><strong>File recovery app</strong><small>Find and recover files from old drives</small></div>
-                  <span class="task-badge green">released</span>
-                </div>
-                <div class="task-row">
-                  <span class="task-state research">⌁</span>
-                  <div><strong>Game file tools</strong><small>Open and understand files used by games</small></div>
-                  <span class="task-badge orange">exploring</span>
-                </div>
-                <div class="task-row">
-                  <span class="task-state complete">✓</span>
-                  <div><strong>Deal finder</strong><small>Spot promising eBay listings</small></div>
-                  <span class="task-badge blue">online</span>
-                </div>
-              </div>
+          <div class="about-grid reveal">
+            <div class="about-prose">
+              <p>Hi, I'm <strong>rain</strong>. I build websites, desktop apps, and small tools in my spare time. I also like to play chess and occasionally singleplayer video games.</p>
             </div>
           </div>
 
-          <div class="signal-strip reveal delay-3">
-            <div><span>What I enjoy</span><strong>Solving hard problems</strong></div>
-            <div><span>What I make</span><strong>Useful apps and tools</strong></div>
-            <div><span>Find me as</span><strong>@rain0x06</strong></div>
+          <div class="profile-stack" id="stack" aria-labelledby="stackTitle">
+            <header class="section-header simple-header reveal">
+              <div>
+                <h2 id="stackTitle">What I use.</h2>
+              </div>
+            </header>
+
+            <div class="stack-table reveal">
+              <div class="stack-row"><span>Languages</span><div>
+                <b><img class="stack-logo" src="assets/icons/c.svg" alt="">C</b>
+                <b><img class="stack-logo" src="assets/icons/cplusplus.svg" alt="">C++</b>
+                <b><img class="stack-logo" src="assets/icons/csharp.svg" alt="">C#</b>
+                <b><img class="stack-logo" src="assets/icons/python.svg" alt="">Python</b>
+                <b><img class="stack-logo" src="assets/icons/javascript.svg" alt="">JavaScript</b>
+              </div><i>05</i></div>
+              <div class="stack-row"><span>Platforms</span><div>
+                <b><img class="stack-logo" src="assets/icons/windows.svg" alt="">Windows</b>
+                <b><img class="stack-logo" src="assets/icons/linux.svg" alt="">Linux</b>
+                <b><img class="stack-logo" src="assets/icons/html5.svg" alt="">Web</b>
+              </div><i>03</i></div>
+              <div class="stack-row"><span>Tools</span><div>
+                <b><img class="stack-logo" src="assets/icons/ida.png" alt="">IDA</b>
+                <b><img class="stack-logo" src="assets/icons/x64dbg.ico" alt="">x64dbg</b>
+                <b><img class="stack-logo" src="assets/icons/vscode.svg" alt="">VS Code</b>
+                <b><img class="stack-logo" src="assets/icons/git.svg" alt="">Git</b>
+                <b><img class="stack-logo" src="assets/icons/hxd.png" alt="">HxD</b>
+                <b><img class="stack-logo" src="assets/icons/codex.png" alt="">Codex</b>
+                <b><img class="stack-logo" src="assets/icons/cheat-engine.ico" alt="">Cheat Engine</b>
+              </div><i>07</i></div>
+            </div>
           </div>
         </section>
 
         <section class="page-section projects-section" id="projects" aria-labelledby="projectsTitle">
-          <header class="section-header reveal">
-            <div class="section-number">01</div>
+          <header class="section-header simple-header reveal">
             <div>
-              <p class="micro-label">Selected work</p>
-              <h2 id="projectsTitle">A few things I’ve made.</h2>
-              <p class="section-lede">Some are ready to use, while others are experiments I keep improving.</p>
+              <h2 id="projectsTitle">Projects.</h2>
             </div>
           </header>
 
           <div class="project-filters reveal" role="group" aria-label="Filter projects">
             <button class="active" type="button" data-filter="all" aria-pressed="true">All <span>4</span></button>
             <button type="button" data-filter="web" aria-pressed="false">Websites <span>2</span></button>
-            <button type="button" data-filter="native" aria-pressed="false">Desktop <span>1</span></button>
-            <button type="button" data-filter="research" aria-pressed="false">Experiments <span>1</span></button>
+            <button type="button" data-filter="native" aria-pressed="false">Desktop <span>2</span></button>
           </div>
 
           <div class="project-list">
             <article class="project-entry project-entry-featured reveal" data-category="web">
               <div class="project-copy">
-                <div class="project-heading">
-                  <span class="project-index">01 / website</span>
-                  <span class="task-badge purple">active</span>
-                </div>
                 <h3>RedEye</h3>
-                <p>Look up a flight and quickly see where it is, where it’s going, how fast it’s moving, and when it should arrive.</p>
-                <div class="project-tags"><span>Web app</span><span>Live flights</span><span>Interactive map</span></div>
+                <p>Track a flight’s location, speed, route, and arrival time.</p>
+                <div class="project-icons" aria-label="Web app with live flights">
+                  <span title="Web app"><img src="assets/icons/html5.svg" alt="Web app"></span>
+                  <span title="Live flights"><img class="line-icon" src="assets/icons/plane.svg" alt="Live flights"></span>
+                </div>
                 <a href="https://redeye.rain0x.me" target="_blank" rel="noreferrer">Try RedEye <span>↗</span></a>
               </div>
-              <div class="demo-frame flight-demo" aria-hidden="true">
-                <div class="demo-toolbar"><span>flight search</span><b>LIVE</b></div>
-                <div class="flight-query"><span>CSN8031</span><i>find</i></div>
-                <div class="flight-result">
-                  <div class="flight-callsign"><span>CSN8031</span><b>A359</b></div>
-                  <div class="flight-route"><strong>SZX</strong><i>→</i><strong>MEX</strong></div>
-                  <div class="flight-stats"><span><small>ALTITUDE</small>35,000 ft</span><span><small>SPEED</small>486 kt</span><span><small>STATUS</small>airborne</span></div>
-                  <div class="flight-track"><i></i><b></b><i></i></div>
+              <div class="redeye-live-preview" aria-label="Interactive RedEye globe showing an aircraft and its route">
+                <div id="portfolioRedeyeGlobe" class="redeye-globe-root"></div>
+                <div class="redeye-globe-caption">
+                  <span><b>Elevation: 36,000 ft</b><b>Speed: 450 kt</b></span><strong>3D</strong>
                 </div>
+                <div class="redeye-flight-label"><span>RE101</span><b id="portfolioRedeyeCoordinates">44.47° N · 143.81° W</b></div>
+                <div class="redeye-flight-legend"><span><i class="observed"></i>Flightpath History</span><span><i class="projected"></i>Projected path</span></div>
               </div>
             </article>
 
             <div class="project-pair">
               <article class="project-entry reveal" data-category="native">
-                <div class="project-heading"><span class="project-index">02 / desktop app</span><span class="task-badge green">free to use</span></div>
-                <div class="mini-demo drive-demo" aria-hidden="true">
-                  <div class="drive-top"><span>DRIVE BACKUP</span><i>safe mode</i></div>
-                  <div class="drive-scan"><b>Drive scanned</b><span><i></i></span><small>12,486 files found</small></div>
+                <div class="product-shot driveassistant-shot">
+                  <img src="assets/driveassistant-ui.png" alt="Current Drive Assistant interface">
                 </div>
                 <h3>Drive Assistant</h3>
-                <p>A desktop app for exploring old drive backups and recovering files without changing the original copy.</p>
-                <div class="project-tags"><span>Windows app</span><span>File recovery</span><span>Open source</span></div>
+                <p>Explore drive backups and recover files without changing the original. Works on Windows, macOS, and Linux.</p>
+                <div class="project-icons" aria-label="Windows, macOS, and Linux file recovery app">
+                  <span title="Windows"><img src="assets/icons/windows.svg" alt="Windows"></span>
+                  <span title="macOS"><img src="assets/icons/apple.svg" alt="macOS"></span>
+                  <span title="Linux"><img src="assets/icons/linux.svg" alt="Linux"></span>
+                  <span title="File recovery"><img class="line-icon" src="assets/icons/hard-drive-download.svg" alt="File recovery"></span>
+                </div>
                 <a href="https://github.com/rain0x06/DriveAssistant" target="_blank" rel="noreferrer">View on GitHub <span>↗</span></a>
               </article>
 
               <article class="project-entry reveal delay-1" data-category="web">
-                <div class="project-heading"><span class="project-index">03 / website</span><span class="task-badge blue">online</span></div>
-                <div class="mini-demo scout-demo" aria-hidden="true">
-                  <div class="scout-top"><span>deal finder</span><b>3 FINDS</b></div>
-                  <div class="scout-row"><i></i><span>Good match<small>similar items found</small></span><b>+22%</b></div>
-                  <div class="scout-row"><i></i><span>Watching<small>potential deal</small></span><b>LIVE</b></div>
-                </div>
+                <div id="portfolioScoutTicker" class="search-ticker-mount"></div>
                 <h3>eBay Scout</h3>
-                <p>A simple website that helps surface interesting eBay listings and compare them with similar items.</p>
-                <div class="project-tags"><span>Website</span><span>Price research</span><span>Automation</span></div>
-                <a href="https://rain0x06.github.io/EbayScout/" target="_blank" rel="noreferrer">Try eBay Scout <span>↗</span></a>
+                <p>Find eBay listings and compare them with similar items.</p>
+                <div class="project-icons" aria-label="Web automation project">
+                  <span title="Website"><img src="assets/icons/html5.svg" alt="Website"></span>
+                  <span title="Automation"><img class="line-icon" src="assets/icons/bot.svg" alt="Automation"></span>
+                </div>
+                <span class="project-action-unavailable" aria-label="Try eBay Scout, coming soon" aria-disabled="true" title="Coming soon">
+                  <span class="project-action-label">Try eBay Scout <span>↗</span></span><em>soon</em>
+                </span>
               </article>
             </div>
 
-            <article class="project-entry research-entry reveal" data-category="research">
-              <div>
-                <div class="project-heading"><span class="project-index">04 / experiment</span><span class="task-badge orange">in progress</span></div>
-                <h3>Game file explorer</h3>
+            <article class="project-entry project-entry-featured ff-tools-entry reveal" data-category="native">
+              <div class="project-copy">
+                <h3>ff-tools (Avalon)</h3>
+                <p>Open Call of Duty game files and view the maps, models, and assets inside.</p>
+                <div class="project-icons" aria-label="Windows game file tool">
+                  <span title="Windows"><img src="assets/icons/windows.svg" alt="Windows"></span>
+                  <span title="Game files"><img class="line-icon" src="assets/icons/gamepad-2.svg" alt="Game files"></span>
+                </div>
+                <span class="project-action-unavailable" aria-label="View ff-tools Avalon on GitHub, coming soon" aria-disabled="true" title="Coming soon">
+                  <span class="project-action-label">View on GitHub <span>↗</span></span><em>soon</em>
+                </span>
               </div>
-              <p>An ongoing set of experiments for opening, viewing, and understanding files pulled from games.</p>
-              <div class="research-steps" aria-label="Project progress">
-                <span class="done">open</span><i></i><span class="done">check</span><i></i><span class="active">view</span><i></i><span>share</span>
+              <div class="project-image ff-tools-image">
+                <img src="assets/ff-tools-splash.png" alt="ff-tools Avalon splash screen">
               </div>
             </article>
+
           </div>
 
-          <a class="repository-link reveal" href="https://github.com/rain0x06?tab=repositories" target="_blank" rel="noreferrer">
-            <span>Want to see more?</span><strong>Browse everything on GitHub ↗</strong>
-          </a>
         </section>
-
-        <section class="page-section about-section" id="about" aria-labelledby="aboutTitle">
-          <header class="section-header reveal">
-            <div class="section-number">02</div>
-            <div>
-              <p class="micro-label">About</p>
-              <h2 id="aboutTitle">I’m curious, and I like making things.</h2>
-              <p class="section-lede">Most of my projects start with a question, a broken tool, or a small annoyance I can’t stop thinking about.</p>
-            </div>
-          </header>
-
-          <div class="about-grid">
-            <div class="about-prose reveal">
-              <p>Hi, I’m <strong>rain0x</strong>. I build websites, desktop apps, and small tools for problems I find interesting.</p>
-              <p>I like figuring out how things work, especially when the answer isn’t obvious or the tools that already exist aren’t very helpful.</p>
-              <p>The fun part is the investigation. The important part is turning what I learn into something clear, useful, and easy for someone else to pick up.</p>
-            </div>
-
-            <div class="principle-list reveal delay-1">
-              <div><span>01</span><p><strong>Make it understandable.</strong> A good tool shouldn’t need a manual.</p></div>
-              <div><span>02</span><p><strong>Keep it useful.</strong> Cool technology only matters if it solves the problem.</p></div>
-              <div><span>03</span><p><strong>Be honest about what’s unfinished.</strong> Experiments can stay experiments while they improve.</p></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="page-section stack-section" id="stack" aria-labelledby="stackTitle">
-          <header class="section-header reveal">
-            <div class="section-number">03</div>
-            <div>
-              <p class="micro-label">What I use</p>
-              <h2 id="stackTitle">The tools I reach for most.</h2>
-              <p class="section-lede">Every project is different, but these are the things I work with most often.</p>
-            </div>
-          </header>
-
-          <div class="stack-table reveal">
-            <div class="stack-row"><span>Code</span><div><b>C</b><b>C++</b><b>C#</b><b>Python</b><b>JavaScript</b></div><i>05</i></div>
-            <div class="stack-row"><span>Things I build</span><div><b>Websites</b><b>Desktop apps</b><b>Recovery tools</b><b>Automation</b></div><i>04</i></div>
-            <div class="stack-row"><span>Where it runs</span><div><b>Windows</b><b>Linux</b><b>Web</b><b>Command line</b></div><i>04</i></div>
-            <div class="stack-row"><span>Everyday tools</span><div><b>IDA</b><b>VS Code</b><b>Git</b><b>Hex editors</b><b>Custom scripts</b></div><i>05</i></div>
-          </div>
-
-          <div class="code-note reveal">
-            <div class="code-note-bar"><span>how-I-work.txt</span><i>plain text</i></div>
-            <pre><code><span>01</span> start with the real problem
-<span>02</span> keep things easy to follow
-<span>03</span> test what people actually see
-<span>04</span> automate the boring parts</code></pre>
-          </div>
-        </section>
-
         <section class="page-section contact-section" id="contact" aria-labelledby="contactTitle">
-          <header class="section-header reveal">
-            <div class="section-number">04</div>
+          <header class="section-header simple-header reveal">
             <div>
-              <p class="micro-label">Contact</p>
-              <h2 id="contactTitle">Have something in mind?</h2>
-              <p class="section-lede">If you want to talk about a project, share an idea, or just say hello, feel free to reach out.</p>
+              <h2 id="contactTitle">Contact.</h2>
             </div>
           </header>
 
-          <div class="contact-composer reveal">
-            <div class="composer-copy">
-              <span>Send a message</span>
-              <p>Tell me a little about what you’re working on.</p>
-            </div>
-            <div class="composer-actions">
-              <a href="mailto:rain@rain0x.me"><span>Email</span><strong>rain@rain0x.me</strong><i>↗</i></a>
-              <button type="button" data-copy-discord><span>Discord</span><strong>rain0x06</strong><i>copy</i></button>
-            </div>
-            <div class="composer-footer">
-              <span>Also on</span>
-              <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer">GitHub ↗</a>
-              <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer">X / @rain0x06 ↗</a>
-              <i class="contact-status"><b></b> open</i>
-            </div>
+          <div class="contact-grid reveal">
+            <a href="mailto:rain@rain0x.me" aria-label="Email rain0x">
+              <img class="line-icon" src="assets/icons/mail.svg" alt=""><span>Email</span>
+            </a>
+            <a href="https://discord.com/users/470161560447483905" target="_blank" rel="noreferrer" aria-label="Open rain0x on Discord">
+              <img src="assets/icons/discord.svg" alt=""><span>Discord</span>
+            </a>
+            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer" aria-label="Open rain0x on GitHub">
+              <img src="assets/icons/github-white.svg" alt=""><span>GitHub</span>
+            </a>
+            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer" aria-label="Open rain0x on X">
+              <img src="assets/icons/x-white.svg" alt=""><span>X</span>
+            </a>
           </div>
         </section>
       </main>
     </div>
 
-    <div class="copy-toast" id="copyToast" role="status" aria-live="polite">Discord copied: rain0x06</div>
+    <script type="module" src="js/project-previews.js?v=20260811-live-components"></script>
     <script src="js/main.js?v=20260811-workspace2"></script>
   </body>
 </html>
