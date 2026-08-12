@@ -1,38 +1,30 @@
 # rain0x.me
 
-Static personal site for `rain0x.me`.
+Static personal portfolio for `rain0x.me`, hosted through GitHub Pages. The design uses an original technical-workspace layout with compact project demos and a responsive section rail.
 
-## Files
+## Site structure
 
-- `index.html` - page markup, fluid canvas, audio element, controls, icons, and metadata.
-- `styles.css` - full-screen fluid backdrop, entry gate, audio controls, and top-right icon styling.
-- `js/fluid.js` - Lively WebGL fluid solver port, shaders, pointer splats, audio-to-fluid choreography, and exported simulation API.
-- `js/audio.js` - Web Audio setup, bundled demo track handling, MP3 file swapping, and play/pause state.
-- `js/main.js` - entry gate, tab title effect, Discord warning, and dat.gui controls.
-- `js/dat.gui.min.js` - tuning panel dependency from the original Lively/WebGL Fluid setup.
-- `js/LDR_LLL1_0.png` - dithering texture used by the display shader.
-- `assets/rain-pfp.png` - favicon, preview image, and avatar.
-- `HUNCHO JACK, Travis Scott, Quavo - Where U From (Audio).mp3` - post-entry audio source for the visualizer.
-- `CNAME` - GitHub Pages custom-domain file.
+- `index.html` — portfolio, about, project, and contact content.
+- `styles.css` — responsive workspace visual system and project demo artwork.
+- `js/main.js` — mobile navigation, active-section state, project filtering, reveal transitions, and Discord handle copy.
+- `assets/rain-pfp.png` — avatar and favicon.
+- `assets/og.png` — generated social preview card matching the site design.
+- `CNAME` — GitHub Pages custom domain.
+- `scripts/build-sites.mjs` — produces the self-contained Cloudflare Worker bundle used by the private Sites preview.
 
-## Visualizer Attribution
+## Featured work
 
-The fluid renderer is ported from the MIT-licensed `rocksdanister/WebGL-Fluid-Simulation` `lively` branch, a fork of Pavel Dobryakov's WebGL Fluid Simulation. The original solver/shader pipeline is preserved and the Lively audio/property glue is replaced with browser MP3 analysis, file input, dat.gui controls, and mouse/touch backdrop input.
+- [RedEye](https://redeye.rain0x.me)
+- [Drive Assistant](https://github.com/rain0x06/DriveAssistant)
+- [eBay Scout](https://rain0x06.github.io/EbayScout/)
 
-## Free Hosting
+## Contact
 
-GitHub Pages is the simplest no-build option:
+- Email: `rain@rain0x.me`
+- Discord: `rain0x06`
+- GitHub: [rain0x06](https://github.com/rain0x06)
+- X: [@rain0x06](https://x.com/rain0x06)
 
-1. Create a public GitHub repo named something like `rain0x.me`.
-2. Upload these files at the repo root.
-3. In GitHub, go to Settings -> Pages.
-4. Set the source to the main branch root.
-5. Add the custom domain `rain0x.me`.
+## Local preview
 
-Cloudflare Pages is also free for a static site and pairs well with Cloudflare Email Routing.
-
-## Email
-
-Use `rain@rain0x.me` as a forwarding address. Free forwarding can receive mail at that address and forward it to your real inbox.
-
-Replying as `rain@rain0x.me` requires an outbound sending provider or SMTP setup. Forwarding alone receives mail; it does not create a full mailbox.
+Serve the repository root with any static file server and open `index.html`.

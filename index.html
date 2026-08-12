@@ -3,119 +3,197 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#050608">
-    <meta name="description" content="rain0x - personal site, socials, and contact.">
-    <meta property="og:title" content="rain0x">
-    <meta property="og:description" content="rain0x.me">
+    <meta name="theme-color" content="#17181a">
+    <meta name="description" content="Websites, apps, tools, and experiments by rain0x.">
+    <meta property="og:title" content="rain0x — projects">
+    <meta property="og:description" content="Apps, tools, experiments, and other projects by rain0x.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rain0x.me">
-    <meta property="og:image" content="https://rain0x.me/assets/rain-pfp.png">
-    <title>rain0x</title>
+    <meta property="og:image" content="https://rain0x.me/assets/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="rain0x — projects">
+    <meta name="twitter:description" content="Apps, tools, experiments, and other projects by rain0x.">
+    <meta name="twitter:image" content="https://rain0x.me/assets/og.png">
+    <title>rain0x — Projects</title>
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
-    <link rel="shortcut icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
-    <link rel="stylesheet" href="styles.css?v=20260627-local16">
-    <script src="js/dat.gui.min.js"></script>
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js" } }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=20260811-workspace2">
   </head>
-  <body class="is-locked">
-    <canvas class="fluid-canvas" id="fluidCanvas" aria-hidden="true"></canvas>
-    <audio id="track" preload="none"></audio>
-
-    <button class="enter-gate" id="enterGate" type="button" aria-label="Click to enter">
-      <span>click to enter</span>
-    </button>
-
-    <input id="trackPicker" class="hidden-file-input" type="file" accept="audio/mpeg,audio/mp3" aria-hidden="true" tabindex="-1">
-    <span class="audio-status" id="audioStatus" aria-live="polite">demo loaded</span>
-
-    <section class="track-picker" id="trackPickerPanel" aria-label="Track playlist" hidden>
-      <div class="track-picker__scrim" data-close-track-picker></div>
-      <div class="track-picker__panel" role="dialog" aria-modal="true" aria-labelledby="trackPickerTitle">
-        <div class="track-picker__header">
-          <div class="spotify-player" id="spotifyPlayer" aria-labelledby="trackPickerTitle">
-            <img class="spotify-player__cover" id="spotifyPlayerCover" src="assets/rain-pfp.png" alt="">
-            <div class="spotify-player__meta">
-              <h2 id="trackPickerTitle" class="spotify-player__title">Select a track</h2>
-              <p class="spotify-player__artist" id="spotifyPlayerArtist">Spotify playlist</p>
-            </div>
-            <button class="spotify-settings" id="spotifySettings" type="button" aria-label="Open settings" title="Open settings">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path>
-                <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.04.04a2.1 2.1 0 0 1-2.97 2.97l-.04-.04a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.3a2.1 2.1 0 0 1-4.2 0v-.05a1.8 1.8 0 0 0-1.1-1.66 1.8 1.8 0 0 0-1.98.36l-.04.04a2.1 2.1 0 0 1-2.97-2.97l.04-.04A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.05A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.04-.04a2.1 2.1 0 0 1 2.97-2.97l.04.04A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.66V2.1a2.1 2.1 0 0 1 4.2 0v.05A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.04-.04a2.1 2.1 0 0 1 2.97 2.97l-.04.04A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.66 1.1h.05a2.1 2.1 0 0 1 0 4.2h-.05A1.8 1.8 0 0 0 19.4 15Z"></path>
-              </svg>
-              <span class="control-tooltip">Settings</span>
-            </button>
-            <div class="spotify-player__controls" aria-label="Playlist controls">
-              <button class="spotify-icon spotify-icon--shuffle" id="spotifyShuffle" type="button" aria-label="Shuffle playlist" title="Shuffle">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M16 3h5v5"></path>
-                  <path d="M4 17h2.6c1.8 0 3.4-.9 4.4-2.4l5.1-7.2A5.3 5.3 0 0 1 20.4 5H21"></path>
-                  <path d="M16 21h5v-5"></path>
-                  <path d="M4 7h2.4c1.7 0 3.2.8 4.2 2.2"></path>
-                  <path d="m15 17 1.1 1.6A5.3 5.3 0 0 0 20.4 21H21"></path>
-                </svg>
-                <span class="control-tooltip">Shuffle</span>
-              </button>
-              <button class="spotify-icon spotify-icon--previous" id="spotifyPrevious" type="button" aria-label="Previous track" title="Previous track">
-                <span class="control-tooltip">Previous</span>
-              </button>
-              <button class="spotify-play" id="spotifyPlayerPlay" type="button" aria-label="Play track" title="Play">
-                <span class="spotify-play__icon" aria-hidden="true"><span></span><span></span></span>
-                <span class="control-tooltip">Play</span>
-              </button>
-              <button class="spotify-icon spotify-icon--next" id="spotifyNext" type="button" aria-label="Next track" title="Next track">
-                <span class="control-tooltip">Next</span>
-              </button>
-            </div>
-            <div class="spotify-player__timeline" aria-label="Track progress">
-              <span class="spotify-player__time" id="spotifyCurrentTime">0:00</span>
-              <input class="spotify-player__seek" id="spotifySeek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek track">
-              <span class="spotify-player__time" id="spotifyDuration">0:00</span>
-            </div>
-          </div>
-        </div>
-        <div class="spotify-embed" id="spotifyEmbed" aria-live="polite"></div>
-        <div class="track-list" id="trackList" role="listbox" aria-label="Spotify-style playlist"></div>
-      </div>
-    </section>
-
-    <header class="site-header" aria-label="Primary links">
-      <button class="icon-link spotify-toggle" id="spotifyOverlayToggle" type="button" aria-label="Toggle Spotify overlay" title="Spotify">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.58 14.42a.62.62 0 0 1-.85.2c-2.34-1.43-5.28-1.75-8.75-.96a.63.63 0 0 1-.28-1.22c3.8-.87 7.06-.5 9.68 1.1.3.18.39.57.2.88Zm1.22-2.7a.78.78 0 0 1-1.07.26c-2.68-1.65-6.77-2.12-9.94-1.16a.78.78 0 1 1-.45-1.5c3.63-1.1 8.13-.57 11.2 1.3.37.23.48.72.26 1.1Zm.1-2.8C14.7 9 9.38 8.83 6.32 9.77a.94.94 0 1 1-.55-1.8c3.52-1.07 9.4-.87 13.1 1.32a.94.94 0 0 1-.96 1.62Z"></path>
-        </svg>
+  <body>
+    <header class="mobile-bar">
+      <a class="mobile-brand" href="#about">rain0x<span>.me</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="railNav">
+        <span></span><span></span><span></span>
+        <span class="sr-only">Toggle navigation</span>
       </button>
-      <a class="icon-link" id="discordLink" href="https://discord.com/users/1119270545633058837" target="_blank" rel="noreferrer" aria-label="Add rain0x on Discord" title="Discord">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20.32 4.37A19.8 19.8 0 0 0 15.89 3l-.21.42c-.1.2-.2.4-.28.61a18.5 18.5 0 0 0-5.8 0 9.8 9.8 0 0 0-.5-1.03 19.7 19.7 0 0 0-4.43 1.37C1.88 8.28 1.18 12.2 1.55 16.07a19.9 19.9 0 0 0 5.43 2.73c.44-.6.83-1.24 1.17-1.9-.64-.24-1.26-.54-1.84-.9l.45-.35c3.55 1.66 7.4 1.66 10.9 0l.45.35c-.59.36-1.2.66-1.85.9.34.66.74 1.3 1.18 1.9a19.8 19.8 0 0 0 5.43-2.73c.45-4.48-.76-8.34-2.55-11.7ZM8.02 13.67c-1.06 0-1.93-.98-1.93-2.18 0-1.2.85-2.18 1.93-2.18s1.95.99 1.93 2.18c0 1.2-.86 2.18-1.93 2.18Zm7.96 0c-1.07 0-1.93-.98-1.93-2.18 0-1.2.85-2.18 1.93-2.18s1.95.99 1.93 2.18c0 1.2-.86 2.18-1.93 2.18Z"></path>
-        </svg>
-      </a>
-      <a class="icon-link" href="https://x.com/rain0x06" target="_blank" rel="noreferrer" aria-label="Open rain0x06 on X" title="X">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.65h2.04L6.49 3h-2.2l13.32 17.8Z"></path>
-        </svg>
-      </a>
-      <a class="icon-link" href="mailto:rain@rain0x.me" aria-label="Email rain@rain0x.me. Replies may come from my Gmail address." title="Email">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4.75 5h14.5A2.75 2.75 0 0 1 22 7.75v8.5A2.75 2.75 0 0 1 19.25 19H4.75A2.75 2.75 0 0 1 2 16.25v-8.5A2.75 2.75 0 0 1 4.75 5Zm0 2a.75.75 0 0 0-.75.75v.39l8 4.8 8-4.8v-.39a.75.75 0 0 0-.75-.75H4.75Zm15.25 3.47-7.49 4.49a1 1 0 0 1-1.02 0L4 10.47v5.78c0 .41.34.75.75.75h14.5c.41 0 .75-.34.75-.75v-5.78Z"></path>
-        </svg>
-      </a>
+      <nav class="rail-nav" id="railNav" aria-label="Portfolio sections">
+        <a class="active" href="#about">About<i></i></a>
+        <a href="#projects">Projects<i></i></a>
+        <a href="#contact">Contact<i></i></a>
+      </nav>
     </header>
 
-    <dialog class="contact-warning" id="discordWarning" aria-labelledby="discordWarningTitle">
-      <form method="dialog">
-        <h2 id="discordWarningTitle">Discord</h2>
-        <p>I do not accept random friend requests. If you'd like to contact me, email rain@rain0x.me. Replies may come from my Gmail address.</p>
-        <div class="warning-actions">
-          <a class="warning-button primary" href="mailto:rain@rain0x.me">Email me</a>
-          <button class="warning-button" id="continueDiscord" type="button">Open Discord</button>
-          <button class="warning-button ghost" type="submit">Close</button>
-        </div>
-      </form>
-    </dialog>
+    <div class="site-frame">
+      <main class="portfolio-main">
+        <section class="page-section about-section profile-section" id="about" aria-labelledby="aboutTitle">
+          <header class="section-header simple-header reveal">
+            <div>
+              <h2 id="aboutTitle">About.</h2>
+            </div>
+          </header>
 
-    <script src="js/fluid.js?v=20260627-spotify11"></script>
-    <script src="js/audio.js?v=20260627-spotify11"></script>
-    <script src="js/main.js?v=20260627-local16"></script>
+          <div class="about-grid reveal">
+            <div class="about-prose">
+              <p>Hi, I'm <strong>rain</strong>. I build websites, desktop apps, and small tools in my spare time. I also like to play chess and occasionally singleplayer video games.</p>
+            </div>
+          </div>
+
+          <div class="profile-stack" id="stack" aria-labelledby="stackTitle">
+            <header class="section-header simple-header reveal">
+              <div>
+                <h2 id="stackTitle">What I use.</h2>
+              </div>
+            </header>
+
+            <div class="stack-table reveal">
+              <div class="stack-row"><span>Languages</span><div>
+                <b><img class="stack-logo" src="assets/icons/c.svg" alt="">C</b>
+                <b><img class="stack-logo" src="assets/icons/cplusplus.svg" alt="">C++</b>
+                <b><img class="stack-logo" src="assets/icons/csharp.svg" alt="">C#</b>
+                <b><img class="stack-logo" src="assets/icons/python.svg" alt="">Python</b>
+                <b><img class="stack-logo" src="assets/icons/javascript.svg" alt="">JavaScript</b>
+              </div><i>05</i></div>
+              <div class="stack-row"><span>Platforms</span><div>
+                <b><img class="stack-logo" src="assets/icons/windows.svg" alt="">Windows</b>
+                <b><img class="stack-logo" src="assets/icons/linux.svg" alt="">Linux</b>
+                <b><img class="stack-logo" src="assets/icons/html5.svg" alt="">Web</b>
+              </div><i>03</i></div>
+              <div class="stack-row"><span>Tools</span><div>
+                <b><img class="stack-logo" src="assets/icons/ida.png" alt="">IDA</b>
+                <b><img class="stack-logo" src="assets/icons/x64dbg.ico" alt="">x64dbg</b>
+                <b><img class="stack-logo" src="assets/icons/vscode.svg" alt="">VS Code</b>
+                <b><img class="stack-logo" src="assets/icons/git.svg" alt="">Git</b>
+                <b><img class="stack-logo" src="assets/icons/hxd.png" alt="">HxD</b>
+                <b><img class="stack-logo" src="assets/icons/codex.png" alt="">Codex</b>
+                <b><img class="stack-logo" src="assets/icons/cheat-engine.ico" alt="">Cheat Engine</b>
+              </div><i>07</i></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-section projects-section" id="projects" aria-labelledby="projectsTitle">
+          <header class="section-header simple-header reveal">
+            <div>
+              <h2 id="projectsTitle">Projects.</h2>
+            </div>
+          </header>
+
+          <div class="project-filters reveal" role="group" aria-label="Filter projects">
+            <button class="active" type="button" data-filter="all" aria-pressed="true">All <span>4</span></button>
+            <button type="button" data-filter="web" aria-pressed="false">Websites <span>2</span></button>
+            <button type="button" data-filter="native" aria-pressed="false">Desktop <span>2</span></button>
+          </div>
+
+          <div class="project-list">
+            <article class="project-entry project-entry-featured reveal" data-category="web">
+              <div class="project-copy">
+                <h3>RedEye</h3>
+                <p>Track a flight’s location, speed, route, and arrival time.</p>
+                <div class="project-icons" aria-label="Web app with live flights">
+                  <span title="Web app"><img src="assets/icons/html5.svg" alt="Web app"></span>
+                  <span title="Live flights"><img class="line-icon" src="assets/icons/plane.svg" alt="Live flights"></span>
+                </div>
+                <a href="https://redeye.rain0x.me" target="_blank" rel="noreferrer">Try RedEye <span>↗</span></a>
+              </div>
+              <div class="redeye-live-preview" aria-label="Interactive RedEye globe showing an aircraft and its route">
+                <div id="portfolioRedeyeGlobe" class="redeye-globe-root"></div>
+                <div class="redeye-globe-caption">
+                  <span><b>Elevation: 36,000 ft</b><b>Speed: 450 kt</b></span><strong>3D</strong>
+                </div>
+                <div class="redeye-flight-label"><span>RE101</span><b id="portfolioRedeyeCoordinates">44.47° N · 143.81° W</b></div>
+                <div class="redeye-flight-legend"><span><i class="observed"></i>Flightpath History</span><span><i class="projected"></i>Projected path</span></div>
+              </div>
+            </article>
+
+            <div class="project-pair">
+              <article class="project-entry reveal" data-category="native">
+                <div class="product-shot driveassistant-shot">
+                  <img src="assets/driveassistant-ui.png" alt="Current Drive Assistant interface">
+                </div>
+                <h3>Drive Assistant</h3>
+                <p>Explore drive backups and recover files without changing the original. Works on Windows, macOS, and Linux.</p>
+                <div class="project-icons" aria-label="Windows, macOS, and Linux file recovery app">
+                  <span title="Windows"><img src="assets/icons/windows.svg" alt="Windows"></span>
+                  <span title="macOS"><img src="assets/icons/apple.svg" alt="macOS"></span>
+                  <span title="Linux"><img src="assets/icons/linux.svg" alt="Linux"></span>
+                  <span title="File recovery"><img class="line-icon" src="assets/icons/hard-drive-download.svg" alt="File recovery"></span>
+                </div>
+                <a href="https://github.com/rain0x06/DriveAssistant" target="_blank" rel="noreferrer">View on GitHub <span>↗</span></a>
+              </article>
+
+              <article class="project-entry reveal delay-1" data-category="web">
+                <div id="portfolioScoutTicker" class="search-ticker-mount"></div>
+                <h3>eBay Scout</h3>
+                <p>Find eBay listings and compare them with similar items.</p>
+                <div class="project-icons" aria-label="Web automation project">
+                  <span title="Website"><img src="assets/icons/html5.svg" alt="Website"></span>
+                  <span title="Automation"><img class="line-icon" src="assets/icons/bot.svg" alt="Automation"></span>
+                </div>
+                <span class="project-action-unavailable" aria-label="Try eBay Scout, coming soon" aria-disabled="true" title="Coming soon">
+                  <span class="project-action-label">Try eBay Scout <span>↗</span></span><em>soon</em>
+                </span>
+              </article>
+            </div>
+
+            <article class="project-entry project-entry-featured ff-tools-entry reveal" data-category="native">
+              <div class="project-copy">
+                <h3>ff-tools (Avalon)</h3>
+                <p>Open Call of Duty game files and view the maps, models, and assets inside.</p>
+                <div class="project-icons" aria-label="Windows game file tool">
+                  <span title="Windows"><img src="assets/icons/windows.svg" alt="Windows"></span>
+                  <span title="Game files"><img class="line-icon" src="assets/icons/gamepad-2.svg" alt="Game files"></span>
+                </div>
+                <span class="project-action-unavailable" aria-label="View ff-tools Avalon on GitHub, coming soon" aria-disabled="true" title="Coming soon">
+                  <span class="project-action-label">View on GitHub <span>↗</span></span><em>soon</em>
+                </span>
+              </div>
+              <div class="project-image ff-tools-image">
+                <img src="assets/ff-tools-splash.png" alt="ff-tools Avalon splash screen">
+              </div>
+            </article>
+
+          </div>
+
+        </section>
+        <section class="page-section contact-section" id="contact" aria-labelledby="contactTitle">
+          <header class="section-header simple-header reveal">
+            <div>
+              <h2 id="contactTitle">Contact.</h2>
+            </div>
+          </header>
+
+          <div class="contact-grid reveal">
+            <a href="mailto:rain@rain0x.me" aria-label="Email rain0x">
+              <img class="line-icon" src="assets/icons/mail.svg" alt=""><span>Email</span>
+            </a>
+            <a href="https://discord.com/users/470161560447483905" target="_blank" rel="noreferrer" aria-label="Open rain0x on Discord">
+              <img src="assets/icons/discord.svg" alt=""><span>Discord</span>
+            </a>
+            <a href="https://github.com/rain0x06" target="_blank" rel="noreferrer" aria-label="Open rain0x on GitHub">
+              <img src="assets/icons/github-white.svg" alt=""><span>GitHub</span>
+            </a>
+            <a href="https://x.com/rain0x06" target="_blank" rel="noreferrer" aria-label="Open rain0x on X">
+              <img src="assets/icons/x-white.svg" alt=""><span>X</span>
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="js/project-previews.js?v=20260811-live-components"></script>
+    <script src="js/main.js?v=20260811-workspace2"></script>
   </body>
 </html>
