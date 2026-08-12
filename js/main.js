@@ -8,6 +8,25 @@
   const revealItems = [...document.querySelectorAll(".reveal")];
   const filterButtons = [...document.querySelectorAll("[data-filter]")];
   const projectEntries = [...document.querySelectorAll("[data-category]")];
+  const spotifySelector = '[id*="spotify" i], [class*="spotify" i], [data-spotify], iframe[src*="spotify.com" i], a[href*="spotify.com" i]';
+
+  function removeSpotifyRemnants(root = document) {
+    if (root.nodeType === Node.ELEMENT_NODE && root.matches?.(spotifySelector)) root.remove();
+    root.querySelectorAll?.(spotifySelector).forEach((element) => element.remove());
+  }
+
+  removeSpotifyRemnants();
+  new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => removeSpotifyRemnants(node)));
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  try {
+    localStorage.removeItem("rain0x.spotifyToken");
+    sessionStorage.removeItem("rain0x.spotifyVerifier");
+    sessionStorage.removeItem("rain0x.spotifyState");
+  } catch {
+    // Storage can be unavailable in strict privacy modes; no Spotify UI is mounted regardless.
+  }
 
   function closeNavigation() {
     if (!navToggle || !railNav) return;

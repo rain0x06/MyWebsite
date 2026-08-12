@@ -17,10 +17,29 @@
     <title>rain0x — Projects</title>
     <link rel="icon" type="image/png" href="assets/rain-pfp.png">
     <link rel="apple-touch-icon" href="assets/rain-pfp.png">
+    <style>
+      [id*="spotify" i],
+      [class*="spotify" i],
+      [data-spotify],
+      iframe[src*="spotify.com" i],
+      a[href*="spotify.com" i] {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+      }
+    </style>
     <script type="importmap">
       { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js" } }
     </script>
-    <link rel="stylesheet" href="styles.css?v=20260811-workspace2">
+    <link rel="stylesheet" href="styles.css?v=20260812-no-spotify">
   </head>
   <body>
     <header class="mobile-bar">
@@ -194,6 +213,6 @@
     </div>
 
     <script type="module" src="js/project-previews.js?v=20260811-live-components"></script>
-    <script src="js/main.js?v=20260811-workspace2"></script>
+    <script src="js/main.js?v=20260812-no-spotify"></script>
   </body>
 </html>
